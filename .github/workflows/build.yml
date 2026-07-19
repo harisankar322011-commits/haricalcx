@@ -1,0 +1,56 @@
+name: Compile HTML to APK
+
+on:
+  push:
+    branches: [ "main", "master" ] # Handles either branch name setup automatically
+  workflow_dispatch:
+
+jobs:
+  android-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+
+      - name: Setup Java Environment
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      - name: Setup Android Build Tools
+        uses: android-actions/setup-android@v3
+
+      - name: Install Mobile Packages
+        run: npm install
+
+      - name: Initialize Mobile Platform
+        run: |
+          npx cap init "Calculator App" "com.example.mycalculator" --web-dir=.
+          npx cap add android
+
+      - name: Configure Start Page to calcx.html
+        run: |
+          sed -i 's/"index.html"/"calcx.html"/g' android/app/src/main/assets/capacitor.config.json || true
+
+      - name: Copy Files to Android Asset Folder
+        run: npx cap sync android
+
+      - name: Execute Android APK Compilation
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleRelease
+
+      - name: Export Ready APK Binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: App-Build-Package
+          path: android/app/build/outputs/apk/release/app-release-unsigned.apk

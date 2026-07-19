@@ -1,0 +1,12 @@
+{
+  "name": "calcx-apk-builder",
+  "version": "1.0.0",
+  "scripts": {
+    "build": "echo 'No build script required'"
+  },
+  "dependencies": {
+    "@capacitor/android": "^6.0.0",
+    "@capacitor/cli": "^6.0.0",
+    "@capacitor/core": "^6.0.0"
+  }
+}

@@ -6,70 +6,9 @@
 <meta name="theme-color" content="#111111">
 <meta name="application-name" content="HARI CALCX">
 <meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<!-- ══ SECURITY & PRIVACY HEADERS ══════════════════════════════════════════
-     All headers below apply defence-in-depth. Every directive is intentional.
-  ═══════════════════════════════════════════════════════════════════════════ -->
-
-<!-- CSP: strict allowlist — only our own inline code + one trusted API endpoint -->
-<meta http-equiv="Content-Security-Policy" content="
-  default-src 'none';
-  style-src   'unsafe-inline';
-  script-src  'unsafe-inline';
-  img-src     'self' data: blob:;
-  connect-src https://open.er-api.com https://api.anthropic.com https://api.openai.com https://generativelanguage.googleapis.com https://api.x.ai;
-  frame-src   'none';
-  object-src  'none';
-  base-uri    'none';
-  form-action 'none';
-  manifest-src 'none';
-  worker-src  'none';
-  media-src   'none';
-  font-src    'none';
-">
-
-<!-- Clickjacking: refuse to be embedded in any iframe on any site -->
-<meta http-equiv="X-Frame-Options" content="DENY">
-
-<!-- MIME sniffing: browser must honour declared Content-Type, never guess -->
-<meta http-equiv="X-Content-Type-Options" content="nosniff">
-
-<!-- Permissions Policy: explicitly disable every browser API we don't use -->
-<meta http-equiv="Permissions-Policy" content="
-  accelerometer=(),
-  ambient-light-sensor=(),
-  autoplay=(),
-  battery=(),
-  camera=(),
-  display-capture=(),
-  document-domain=(),
-  encrypted-media=(),
-  execution-while-not-rendered=(),
-  execution-while-out-of-viewport=(),
-  fullscreen=(),
-  geolocation=(),
-  gyroscope=(),
-  interest-cohort=(),
-  magnetometer=(),
-  microphone=(),
-  midi=(),
-  navigation-override=(),
-  payment=(),
-  picture-in-picture=(),
-  publickey-credentials-get=(),
-  screen-wake-lock=(),
-  serial=(),
-  speaker-selection=(),
-  sync-xhr=(),
-  usb=(),
-  vibrate=(),
-  vr=(),
-  wake-lock=(),
-  web-share=(),
-  xr-spatial-tracking=()
-">
-
-<!-- Referrer: only send origin (no path) to same site; external requests get nothing -->
-<meta name="referrer" content="same-origin">
+<!-- Security fallback. HTTP response headers are configured in Netlify's _headers file. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src 'self' data: blob:; connect-src 'self' https://open.er-api.com; frame-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'; manifest-src 'none'; worker-src 'none'; media-src 'none'; font-src 'self' data:;">
+<meta name="referrer" content="no-referrer">
 
 <!-- Search engines / crawlers / archivers — this is a private local tool -->
 <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex">
@@ -83,7 +22,7 @@
 <!-- Pragma (legacy HTTP/1.0 cache disable) -->
 <meta http-equiv="Pragma" content="no-cache">
 <title>HARI CALCX</title>
-<!-- PRIVACY: No Google Fonts, no CDN, no external resources — zero tracking surface -->
+<!-- No third-party scripts or CDNs are loaded. The currency converter makes a direct request for exchange rates when online. -->
 <!-- PRIVACY: All computation is local — no data ever leaves this page -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
@@ -704,14 +643,20 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
   </div>
 </div>
 
-<!-- TOOLBOX OVERLAY — all 40 tools in a grid -->
+<!-- TOOLBOX OVERLAY -->
 <div class="ks-overlay" id="toolboxOverlay" onclick="if(event.target===this)toggleToolbox()">
   <div class="ks-box" style="max-width:520px;max-height:85vh;overflow-y:auto;">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-      <div class="ks-title" style="margin-bottom:0;">⊞ ALL TOOLS</div>
-      <input type="text" id="tbSearch" placeholder="Filter..." class="inp" style="width:140px;padding:5px 10px;font-size:11px;" oninput="filterToolbox(this.value)" autocomplete="off"/ spellcheck="false" autocorrect="off" autocapitalize="off">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:10px;">
+      <div class="ks-title" style="margin-bottom:0;">⊞ TOOLBOX <span id="tbCount" style="font-size:9px;color:var(--tm);font-weight:600;"></span></div>
+      <input type="text" id="tbSearch" placeholder="Search tools..." class="inp" style="width:145px;padding:5px 10px;font-size:11px;" oninput="filterToolbox(this.value)" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" aria-label="Search calculator tools">
     </div>
-    <div id="toolboxGrid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:6px;"></div>
+    <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">
+      <button type="button" class="qb active" data-toolbox-mode="all" onclick="setToolboxMode('all')">ALL</button>
+      <button type="button" class="qb" data-toolbox-mode="favourites" onclick="setToolboxMode('favourites')">★ FAVOURITES</button>
+      <button type="button" class="qb" data-toolbox-mode="recent" onclick="setToolboxMode('recent')">↻ RECENT</button>
+    </div>
+    <div id="toolboxGrid" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;"></div>
+    <div style="font-size:9px;color:var(--tm);text-align:center;margin-top:8px;">Favourites and recent tools are saved only for this tab.</div>
     <button class="btn btn-sec ks-close" onclick="toggleToolbox()">CLOSE</button>
   </div>
 </div>
@@ -1687,54 +1632,21 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
 
 
 
-<!-- PRIVACY INFO MODAL -->
+<!-- PRIVACY & SECURITY INFO -->
 <div class="priv-modal" id="privModal" onclick="if(event.target===this)closePrivModal()">
   <div class="priv-inner">
-    <div class="priv-title" style="display:flex;align-items:center;gap:8px;">🛡️ HARI CALCULX AI — 35-LAYER PRIVACY SHIELD <button onclick="closePrivModal()" style="margin-left:auto;background:none;border:none;color:var(--tm);font-size:18px;cursor:pointer;line-height:1;">✕</button></div>
-
-    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:var(--a1);margin:6px 0 10px;font-weight:700;">🔵 Original 15 Layers</div>
-
-    <div class="priv-row"><span class="priv-icon">🧹</span><div class="priv-text"><strong>Memory Scrubber</strong><br>All result fields auto-wiped 15 seconds after tab is hidden. Sensitive data never lingers.</div></div>
-    <div class="priv-row"><span class="priv-icon">🌫️</span><div class="priv-text"><strong>Anti-Screenshot Blur</strong><br>Passwords, results and AI replies blur instantly when the tab loses focus — no shoulder surfing.</div></div>
-    <div class="priv-row"><span class="priv-icon">🕶️</span><div class="priv-text"><strong>Alt+H Dim Mode</strong><br>Press Alt+H to instantly black out the entire app from prying eyes. Press again to restore.</div></div>
-    <div class="priv-row"><span class="priv-icon">📋</span><div class="priv-text"><strong>Clipboard Poison (45s)</strong><br>Anything copied from this app is automatically erased from your clipboard after 45 seconds.</div></div>
-    <div class="priv-row"><span class="priv-icon">☠️</span><div class="priv-text"><strong>Memory Poison Overwrite</strong><br>Before any wipe, fields are overwritten with junk data so memory scanners find nothing meaningful.</div></div>
-    <div class="priv-row"><span class="priv-icon">🚧</span><div class="priv-text"><strong>DOM Mutation Blocker</strong><br>A MutationObserver kills any injected &lt;script&gt; or &lt;iframe&gt; tag the moment it appears in the DOM.</div></div>
-    <div class="priv-row"><span class="priv-icon">🌐</span><div class="priv-text"><strong>Fetch / XHR Network Guard</strong><br>All network requests are intercepted. Only open.er-api.com (currency) and api.anthropic.com (AI) are allowed. Everything else is blocked.</div></div>
-    <div class="priv-row"><span class="priv-icon">🖨️</span><div class="priv-text"><strong>Print Block</strong><br>Printing shows a "BLOCKED FOR PRIVACY" screen instead of your data.</div></div>
-    <div class="priv-row"><span class="priv-icon">🚫</span><div class="priv-text"><strong>Drag Shield</strong><br>Results and passwords cannot be dragged out of the app to exfiltrate data.</div></div>
-    <div class="priv-row"><span class="priv-icon">📦</span><div class="priv-text"><strong>CSS Containment</strong><br>Tool panels are CSS-contained — rendering is isolated so layout attacks can't probe internal state.</div></div>
-    <div class="priv-row"><span class="priv-icon">🖼️</span><div class="priv-text"><strong>Frame / Iframe Blocker</strong><br>App refuses to run inside any iframe — prevents clickjacking and data harvesting by third-party sites.</div></div>
-    <div class="priv-row"><span class="priv-icon">🧼</span><div class="priv-text"><strong>Input Sanitizer</strong><br>All text inputs strip null bytes and control characters — kills injection and exfiltration attempts.</div></div>
-    <div class="priv-row"><span class="priv-icon">👁️</span><div class="priv-text"><strong>Focus Blur</strong><br>Sensitive outputs blur when the browser window loses focus. They unblur only when you return.</div></div>
-    <div class="priv-row"><span class="priv-icon">🚫</span><div class="priv-text"><strong>Zero Tracking</strong><br>No analytics, no CDN, no cookies, no localStorage. Session data (currency cache) dies when you close the tab.</div></div>
-    <div class="priv-row"><span class="priv-icon">📵</span><div class="priv-text"><strong>Hardware APIs Blocked</strong><br>Camera, microphone, GPS, USB, Bluetooth, and 25+ browser APIs explicitly disabled via Permissions-Policy header.</div></div>
-
-    <div style="font-size:9px;text-transform:uppercase;letter-spacing:.08em;color:#0891b2;margin:12px 0 10px;font-weight:700;">🟦 20 New Phantom Layers</div>
-
-    <div class="priv-row"><span class="priv-icon">🎨</span><div class="priv-text"><strong>Canvas Fingerprint Poisoner</strong><br>Every canvas pixel read gets 1-bit noise injected — your GPU fingerprint is broken without affecting visuals.</div></div>
-    <div class="priv-row"><span class="priv-icon">📡</span><div class="priv-text"><strong>WebRTC IP Leak Blocker</strong><br>RTCPeerConnection completely disabled — your real IP address cannot leak even through a VPN.</div></div>
-    <div class="priv-row"><span class="priv-icon">🧭</span><div class="priv-text"><strong>Navigator Hardening</strong><br>Reports generic CPU cores (4), RAM (4GB), hides plugins and mimeTypes — browser fingerprint neutralised.</div></div>
-    <div class="priv-row"><span class="priv-icon">🔋</span><div class="priv-text"><strong>Battery API Blocked</strong><br>getBattery() is blocked — battery level and charge state cannot be used to track you across sessions.</div></div>
-    <div class="priv-row"><span class="priv-icon">⏱️</span><div class="priv-text"><strong>High-Res Timer Reduction</strong><br>performance.now() precision reduced to 100ms — kills Spectre-style side-channel timing attacks.</div></div>
-    <div class="priv-row"><span class="priv-icon">📤</span><div class="priv-text"><strong>Beacon API Blocked</strong><br>navigator.sendBeacon() is blocked — the silent page-unload data exfiltration trick is dead.</div></div>
-    <div class="priv-row"><span class="priv-icon">📋</span><div class="priv-text"><strong>Clipboard Read Blocked</strong><br>clipboard.readText() and execCommand('paste') are blocked — no script can silently read your clipboard.</div></div>
-    <div class="priv-row"><span class="priv-icon">🎮</span><div class="priv-text"><strong>WebGL GPU Spoof</strong><br>UNMASKED_VENDOR_WEBGL returns "Generic Vendor" — your exact GPU model is invisible to all scripts.</div></div>
-    <div class="priv-row"><span class="priv-icon">🎵</span><div class="priv-text"><strong>Audio Fingerprint Noise</strong><br>AudioBuffer.getChannelData() adds inaudible ±0.0000001 noise — audio stack fingerprinting is broken.</div></div>
-    <div class="priv-row"><span class="priv-icon">💾</span><div class="priv-text"><strong>IndexedDB + CacheStorage Blocked</strong><br>Both supercookie storage APIs are set to null — no persistent tracking data can be stored.</div></div>
-    <div class="priv-row"><span class="priv-icon">📢</span><div class="priv-text"><strong>Cross-Tab Leak Blocked</strong><br>BroadcastChannel neutered, SharedWorker blocked — tabs cannot spy on each other's data.</div></div>
-    <div class="priv-row"><span class="priv-icon">📐</span><div class="priv-text"><strong>Screen Resolution Spoofed</strong><br>Reports dimensions rounded to nearest 100px and always colorDepth=24 — resolution is no longer a unique identifier.</div></div>
-    <div class="priv-row"><span class="priv-icon">🔤</span><div class="priv-text"><strong>Font Fingerprint Blocked</strong><br>measureText() adds ±0.0001px noise — font detection via canvas timing is broken.</div></div>
-    <div class="priv-row"><span class="priv-icon">📤</span><div class="priv-text"><strong>Web Share API Blocked</strong><br>navigator.share() is blocked — content cannot be silently shared via the Share API.</div></div>
-    <div class="priv-row"><span class="priv-icon">🤖</span><div class="priv-text"><strong>Autofill Exfiltration Guard</strong><br>CSS @keyframes trick detects browser autofill on inactive fields and clears them immediately.</div></div>
-    <div class="priv-row"><span class="priv-icon">⚡</span><div class="priv-text"><strong>rAF Timing Clamped</strong><br>requestAnimationFrame timestamps clamped to 10ms precision — keystroke inference via frame timing is impossible.</div></div>
-    <div class="priv-row"><span class="priv-icon">🧊</span><div class="priv-text"><strong>Object.freeze on Constants</strong><br>App constants (currency rates, crypto rates) are frozen — injected scripts cannot tamper with them.</div></div>
-    <div class="priv-row"><span class="priv-icon">💥</span><div class="priv-text"><strong>3-Pass DOD Wipe on Exit</strong><br>On tab close: all inputs overwritten 1s → 0s → random chars before clearing. Memory forensics finds nothing.</div></div>
-    <div class="priv-row"><span class="priv-icon">🕵️</span><div class="priv-text"><strong>CSS History Sniffing Blocked</strong><br>a:visited forced to inherit color — your browsing history cannot be probed via CSS getComputedStyle.</div></div>
-    <div class="priv-row"><span class="priv-icon">🚨</span><div class="priv-text"><strong>Stealth Panic Mode (Alt+R)</strong><br>Press Alt+R or long-press the shield badge 2 seconds — entire app instantly becomes a fake 404 page. Press again to restore.</div></div>
-
-    <div style="margin-top:14px;padding:10px;background:linear-gradient(135deg,rgba(109,40,217,.12),rgba(8,145,178,.12));border:1px solid rgba(109,40,217,.3);border-radius:10px;font-size:10px;color:var(--tm);text-align:center;letter-spacing:.04em;">
-      🛡️ <strong>35 ACTIVE LAYERS</strong> · Zero data ever leaves this app except for currency rates &amp; AI queries · 100% client-side · No tracking · No ads · No cookies
+    <div class="priv-title" style="display:flex;align-items:center;gap:8px;">🔐 PRIVACY &amp; SECURITY
+      <button type="button" onclick="closePrivModal()" aria-label="Close privacy and security" style="margin-left:auto;background:none;border:none;color:var(--tm);font-size:18px;cursor:pointer;line-height:1;">✕</button>
+    </div>
+    <div class="priv-row"><span class="priv-icon">🧮</span><div class="priv-text"><strong>Local calculations</strong><br>Calculator tools run in this page. Calculation inputs and results are not sent to a server by the calculator.</div></div>
+    <div class="priv-row"><span class="priv-icon">🌐</span><div class="priv-text"><strong>Network use</strong><br>The currency converter can request exchange rates from open.er-api.com. Other calculator tools work without that request.</div></div>
+    <div class="priv-row"><span class="priv-icon">🤖</span><div class="priv-text"><strong>AI links are external</strong><br>AI buttons open third-party websites only when you tap them. This app does not send your calculator data to those AI providers. Anything you type on their sites is governed by their own policies.</div></div>
+    <div class="priv-row"><span class="priv-icon">🔑</span><div class="priv-text"><strong>Password generator</strong><br>Passwords are generated in your browser using the Web Crypto API. Do not reuse passwords, and store important passwords in a trusted password manager.</div></div>
+    <div class="priv-row"><span class="priv-icon">🗂️</span><div class="priv-text"><strong>Tab-only preferences</strong><br>Theme, currency-rate cache, favourites, and recent tools use session storage. They are intended to last only for the current tab session.</div></div>
+    <div class="priv-row"><span class="priv-icon">🛡️</span><div class="priv-text"><strong>HTTP security headers</strong><br>Netlify serves clickjacking, MIME-sniffing, referrer, permissions, and Content Security Policy headers. Inline JavaScript is still allowed for this single-file app, so these are protective layers—not a guarantee against every script-injection bug.</div></div>
+    <div class="priv-row"><span class="priv-icon">⚠️</span><div class="priv-text"><strong>Honest limits</strong><br>No website can stop someone with access to your device from taking screenshots, inspecting the page, using browser extensions, or reading what is displayed. Keep sensitive information off shared or compromised devices.</div></div>
+    <div style="margin-top:12px;padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;font-size:10px;color:var(--tm);line-height:1.6;">
+      No sign-in or analytics service is built into this page. Security depends on the browser, device, HTTPS connection, and the deployed site configuration.
     </div>
   </div>
 </div>
@@ -1873,7 +1785,7 @@ document.getElementById('si').addEventListener('focus',()=>{const v=document.get
 // ════════════════════════════════════════
 let _panels=[], _tabBtns=[];
 function _initDOMCache(){_panels=Array.from(document.querySelectorAll('.panel'));_tabBtns=Array.from(document.querySelectorAll('.tb'));}
-function switchTab(id,idx){
+function switchTab(id,idx){ if(typeof recordRecentTool==='function')recordRecentTool(id);
   _panels.forEach(p=>p.classList.remove('active'));
   _tabBtns.forEach(b=>b.classList.remove('active'));
   const el=document.getElementById('tab-'+id);
@@ -2022,33 +1934,102 @@ document.addEventListener('keydown',e=>{
 });
 // TOOLBOX — all-tools grid overlay
 const TOOL_ICONS={sci:'🔬',base:'🔢',pct:'%',gst:'🧾',disc:'🏷️',currency:'💱',unit:'📐',date:'📅',emi:'🏦',sip:'📈',tip:'🍽️',bmi:'⚖️',stats:'📊',geo:'📐',matrix:'🔲',frac:'½',roman:'Ⅻ',pw:'🔐',text:'📝',sw:'⏱️',cd:'⏳',wc:'🌍',n2w:'💬',fuel:'⛽',elec:'⚡',grade:'🎓',cc:'💳',rand:'🎲',bday:'🎂',pace:'🏃',paint:'🎨',wdays:'📆',ratio:'📺',crypto:'₿',bpm:'🎵',wave:'〰️',chem:'⚗️',cal:'🥗',color:'🎨',loan2:'⚖️',hash:'#️⃣',scinot:'🔭',grad:'🌈',sleep:'😴',unitprice:'🛒',bodyfat:'💪',mortgage:'🏠',love:'❤️',invoice:'📄',prime:'🔢',sqft:'📏',burn:'🔥',numseq:'∞',datasize:'💾',feels:'🌡️',interest:'💰',sdt:'🚀',water:'💧',profitloss:'📊',agedetail:'🎂',tzconv:'🌐',romanmath:'Ⅻ',discchain:'🏷️',numtrivia:'🔢',macro:'🥗'};
+let _toolboxMode='all';
+function readToolList(key){
+  try{
+    const parsed=JSON.parse(sessionStorage.getItem(key)||'[]');
+    if(!Array.isArray(parsed))return [];
+    return parsed.filter((id,i)=>typeof id==='string'&&TOOLS.some(t=>t.tab===id)&&parsed.indexOf(id)===i).slice(0,20);
+  }catch(e){return [];}
+}
+function storeToolList(key,list){try{sessionStorage.setItem(key,JSON.stringify(list));}catch(e){}}
+let _toolFavorites=readToolList('calcx-favourites-v1');
+let _toolRecents=readToolList('calcx-recents-v1');
+function recordRecentTool(id){
+  if(!TOOLS.some(t=>t.tab===id))return;
+  _toolRecents=[id,..._toolRecents.filter(x=>x!==id)].slice(0,8);
+  storeToolList('calcx-recents-v1',_toolRecents);
+}
+function toggleToolFavorite(id){
+  if(_toolFavorites.includes(id))_toolFavorites=_toolFavorites.filter(x=>x!==id);
+  else{
+    if(_toolFavorites.length>=20){toast('You can save up to 20 favourites in this tab.');return;}
+    _toolFavorites=[id,..._toolFavorites];
+  }
+  storeToolList('calcx-favourites-v1',_toolFavorites);
+  buildToolbox();
+}
+function setToolboxMode(mode){
+  _toolboxMode=['all','favourites','recent'].includes(mode)?mode:'all';
+  document.querySelectorAll('[data-toolbox-mode]').forEach(b=>b.classList.toggle('active',b.dataset.toolboxMode===_toolboxMode));
+  buildToolbox();
+}
 function buildToolbox(){
   const grid=document.getElementById('toolboxGrid');
-  grid.innerHTML='';
-  TOOLS.forEach(t=>{
+  if(!grid)return;
+  grid.replaceChildren();
+  const ordered=TOOLS.slice();
+  const order=_toolboxMode==='favourites'?_toolFavorites:(_toolboxMode==='recent'?_toolRecents:null);
+  if(order)ordered.sort((a,b)=>{
+    const ai=order.indexOf(a.tab),bi=order.indexOf(b.tab);
+    return (ai<0?999:ai)-(bi<0?999:bi)||a.idx-b.idx;
+  });
+  ordered.forEach(t=>{
     const div=document.createElement('div');
     div.className='tb-item';
+    div.style.position='relative';
+    div.dataset.tab=t.tab;
     div.dataset.name=t.name.toLowerCase();
     div.dataset.tags=t.tags.toLowerCase();
-    div.innerHTML=`<span class="tb-item-icon">${TOOL_ICONS[t.tab]||'🔧'}</span>${esc(t.name)}`;
+    const icon=document.createElement('span');
+    icon.className='tb-item-icon';
+    icon.textContent=TOOL_ICONS[t.tab]||'🔧';
+    const label=document.createElement('span');
+    label.textContent=t.name;
+    label.style.display='block';
+    div.append(icon,label);
+    const star=document.createElement('button');
+    star.type='button';
+    star.className='tb-fav-btn';
+    star.textContent=_toolFavorites.includes(t.tab)?'★':'☆';
+    star.setAttribute('aria-label',(_toolFavorites.includes(t.tab)?'Remove from':'Add to')+' favourites: '+t.name);
+    star.title=star.getAttribute('aria-label');
+    star.style.cssText='position:absolute;right:2px;top:1px;border:0;background:transparent;color:var(--a4);font-size:16px;line-height:1;padding:2px;min-width:22px;min-height:22px;cursor:pointer;z-index:1;';
+    star.addEventListener('click',e=>{e.stopPropagation();toggleToolFavorite(t.tab);});
+    div.appendChild(star);
     div.addEventListener('click',()=>{switchTab(t.tab,t.idx);toggleToolbox();});
     grid.appendChild(div);
   });
+  const input=document.getElementById('tbSearch');
+  filterToolbox(input?input.value:'');
 }
 function filterToolbox(v){
-  const q=v.toLowerCase();
-  document.querySelectorAll('.tb-item').forEach(el=>{
-    const show=!q||el.dataset.name.includes(q)||el.dataset.tags.includes(q);
+  const q=String(v||'').toLowerCase().trim();
+  const allowed=_toolboxMode==='favourites'?new Set(_toolFavorites):(_toolboxMode==='recent'?new Set(_toolRecents):null);
+  const items=Array.from(document.querySelectorAll('.tb-item'));
+  let shown=0;
+  items.forEach(el=>{
+    const searchMatch=!q||el.dataset.name.includes(q)||el.dataset.tags.includes(q);
+    const modeMatch=!allowed||allowed.has(el.dataset.tab);
+    const show=searchMatch&&modeMatch;
     el.style.display=show?'':'none';
+    if(show)shown++;
   });
+  const count=document.getElementById('tbCount');
+  if(count)count.textContent='· '+shown+' shown';
+  const grid=document.getElementById('toolboxGrid');
+  let empty=document.getElementById('tbEmpty');
+  if(!shown){
+    if(!empty&&grid){empty=document.createElement('div');empty.id='tbEmpty';empty.style.cssText='grid-column:1/-1;text-align:center;padding:18px 8px;color:var(--tm);font-size:11px;';grid.appendChild(empty);}
+    if(empty)empty.textContent=_toolboxMode==='favourites'?'No favourites yet. Tap ☆ on any tool.':(_toolboxMode==='recent'?'Your recently used tools will appear here.':'No tools match this search.');
+  }else if(empty)empty.remove();
 }
 function toggleToolbox(){
   const ov=document.getElementById('toolboxOverlay');
   const open=ov.classList.toggle('show');
-  if(open){buildToolbox();document.getElementById('tbSearch').value='';document.getElementById('tbSearch').focus();}
+  if(open){buildToolbox();const input=document.getElementById('tbSearch');if(input){input.value='';filterToolbox('');input.focus();}}
   document.getElementById('toolboxBtn').style.color=open?'var(--a1)':'';
 }
-// ════════════════════════════════════════
 const TAB_DEFS=[
   {id:'sci',label:'SCIENTIFIC'},{id:'base',label:'BASE CONV'},{id:'pct',label:'PERCENTAGE'},
   {id:'gst',label:'GST/TAX'},{id:'disc',label:'DISCOUNT'},{id:'currency',label:'CURRENCY'},
@@ -3890,46 +3871,7 @@ cMacro();
 
 
 // ══════════════════════════════════════════════════════════════════════
-// PRIVACY ENGINE — Maximum protection, zero functionality impact
-// All handlers are passive, non-blocking, and fail gracefully
-// ══════════════════════════════════════════════════════════════════════
-
-(function HariCalculXPrivacy(){
-  'use strict';
-
-  // ── 1. SESSION WIPE: clear sensitive sessionStorage on tab close ─────
-  // pagehide fires more reliably than beforeunload (works on mobile too)
-  window.addEventListener('pagehide', function(){
-    try{
-      // Only wipe calc-specific keys, not everything (in case user has other tabs)
-      ['hari_calcx_rates_v1','hari_calcx_rates_ts_v1'].forEach(k=>sessionStorage.removeItem(k));
-    }catch(e){}
-  });
-
-  // ── 2. IDLE WIPE: clear sensitive displayed values after 10 min idle ─
-  var _idleTimer = null;
-  var IDLE_MS = 10 * 60 * 1000; // 10 minutes
-  var SENSITIVE_IDS = ['pw-d','hashOut','hOut1','hOut2','hOut3','hOut4'];
-  function resetIdle(){
-    clearTimeout(_idleTimer);
-    _idleTimer = setTimeout(function(){
-      SENSITIVE_IDS.forEach(function(id){
-        var el = document.getElementById(id);
-        if(el && el.textContent && el.textContent.length > 3){
-          el.textContent = '— cleared after idle —';
-          el.style.color = 'var(--tm)';
-        }
-      });
-      // Also clear password input area
-      var pwDisplay = document.getElementById('pw-d');
-      if(pwDisplay) pwDisplay.textContent = '';
-    }, IDLE_MS);
-  }
-  // Only track interaction events — no keylogging, just presence
-  ['click','touchstart','keydown'].forEach(function(ev){
-    document.addEventListener(ev, resetIdle, {passive:true});
-  });
-  resetIdle(); // Start the timer
+// Initialize tool outputs after all calculator functions are defined.
 try{if(typeof cGST==="function")cGST();}catch(e){}
 try{if(typeof cFrac==="function")cFrac();}catch(e){}
 try{if(typeof cGPA==="function")cGPA();}catch(e){}
@@ -3939,317 +3881,17 @@ try{if(typeof cBday==="function")cBday();}catch(e){}
 try{if(typeof cCrypto==="function")cCrypto();}catch(e){}
 try{if(typeof cLoan2==="function")cLoan2();}catch(e){}
 
-  // ── 3. VISIBILITY WIPE: mask password when tab goes to background ─────
-  document.addEventListener('visibilitychange', function(){
-    if(document.hidden){
-      var el = document.getElementById('pw-d');
-      if(el && el.textContent && el.textContent.length > 3 && el.textContent !== '— hidden —'){
-        el._savedContent = el.textContent;
-        el.textContent = '— hidden —';
-        el.style.color = 'var(--tm)';
-      }
-    } else {
-      // Restore briefly on return (user may still need it)
-      var el = document.getElementById('pw-d');
-      if(el && el._savedContent){
-        el.textContent = el._savedContent;
-        el.style.color = '';
-        el._savedContent = null;
-        // Auto-hide again after 30 seconds
-        setTimeout(function(){
-          if(el.textContent && el.textContent.length > 3 && el.textContent !== '— hidden —'){
-            el.textContent = '— tap to regenerate —';
-            el.style.color = 'var(--tm)';
-          }
-        }, 30000);
-      }
-    }
-  });
-
-  // ── 4. RIGHT-CLICK BLOCK on sensitive outputs ─────────────────────────
-  // Prevents "Inspect Element" on password/hash outputs
-  ['pw-d','hashOut','hOut1','hOut2','hOut3','hOut4'].forEach(function(id){
-    var el = document.getElementById(id);
-    if(el) el.addEventListener('contextmenu', function(e){ e.preventDefault(); });
-  });
-
-  // ── 5. DEVTOOLS DETECTION: warn if DevTools are open ─────────────────
-  // Harmless — just shows a privacy reminder toast, no blocking
-  var _devOpen = false;
-  var _devCheck = setInterval(function(){
-    var threshold = 160;
-    var widthDiff  = window.outerWidth  - window.innerWidth  > threshold;
-    var heightDiff = window.outerHeight - window.innerHeight > threshold;
-    if((widthDiff || heightDiff) && !_devOpen){
-      _devOpen = true;
-      // Show subtle privacy reminder
-      var t = document.getElementById('toast');
-      if(t){ t.textContent = '🔒 DevTools detected — sensitive data hidden'; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 3000); }
-      // Mask password display
-      var pw = document.getElementById('pw-d');
-      if(pw && pw.textContent && pw.textContent.length > 3){ pw.textContent = '— hidden —'; pw.style.color = 'var(--tm)'; }
-    } else if(!widthDiff && !heightDiff){
-      _devOpen = false;
-    }
-  }, 1500);
-
-  // ── 6. CLIPBOARD AUTO-CLEAR: wipe clipboard 60s after copy ───────────
-  // Overrides the global copyTxt to add auto-clear
-  var _origCopyTxt = window.copyTxt;
-  window.copyTxt = function(t){
-    if(_origCopyTxt) _origCopyTxt(t);
-    // Schedule clipboard wipe after 60 seconds
-    setTimeout(function(){
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        navigator.clipboard.writeText('').catch(function(){});
-      }
-    }, 60000);
-  };
-
-  // ── 7. DRAG PREVENTION: prevent accidental data drag-out ─────────────
-  document.addEventListener('dragstart', function(e){
-    var el = e.target;
-    // Block dragging of result/output elements
-    if(el && (el.classList.contains('rv') || el.id === 'pw-d')){
-      e.preventDefault();
-    }
-  });
-
-  // ── 8. SELECTION PREVENTION on password output ───────────────────────
-  // User must use the Copy button — prevents shoulder-surfing via select+screenshot
-  var pwEl = document.getElementById('pw-d');
-  if(pwEl){
-    pwEl.style.userSelect = 'none';
-    pwEl.style.webkitUserSelect = 'none';
-  }
-
-  // ── 9. PRINT INTERCEPT: hide sensitive data before print ─────────────
-  window.addEventListener('beforeprint', function(){
-    SENSITIVE_IDS.forEach(function(id){
-      var el = document.getElementById(id);
-      if(el){ el._printSave = el.textContent; el.textContent = '[REDACTED FOR PRINT]'; }
-    });
-  });
-  window.addEventListener('afterprint', function(){
-    SENSITIVE_IDS.forEach(function(id){
-      var el = document.getElementById(id);
-      if(el && el._printSave){ el.textContent = el._printSave; el._printSave = null; }
-    });
-  });
-
-  // ── 10. FREEZE HISTORY: prevent back-button to expose calc state ──────
-  // Replace the current history entry so back-button leaves the app cleanly
-  try{
-    if(window.history && window.history.replaceState){
-      window.history.replaceState(null, '', window.location.href);
-    }
-  }catch(e){}
-
-  // ── 11. RATE DATA EXPIRY: force-expire stale cached rates ────────────
-  // Belt-and-suspenders: also expire on load if over 6 hours old
-  try{
-    var ts = +sessionStorage.getItem('hari_calcx_rates_ts_v1') || 0;
-    if(Date.now() - ts > 6 * 3600000){
-      sessionStorage.removeItem('hari_calcx_rates_v1');
-      sessionStorage.removeItem('hari_calcx_rates_ts_v1');
-    }
-  }catch(e){}
-
-  // ── 12. IFRAME BUST: ensure we are never embedded in a frame ─────────
-  try{
-    if(window.top !== window.self){
-      // We are inside an iframe — break out or blank
-      window.top.location = window.self.location;
-    }
-  }catch(e){
-    // If cross-origin frame denies access, blank the page content
-    document.body.innerHTML = '<div style="font-family:monospace;padding:40px;color:#f44;background:#111;height:100vh;display:flex;align-items:center;justify-content:center;font-size:16px;">🔒 HARI CALCX cannot run inside an embedded frame.</div>';
-  }
-
-})(); // end HARI CALCXPrivacy IIFE
-
-
-
-// ══════════════════════════════════════════════════════════════════════
-// HARI CALCULX — FLAT PRIVACY ENGINE (35 layers, no IIFE nesting)
-// Each layer is independent. Flag set first. No scope issues possible.
-// ══════════════════════════════════════════════════════════════════════
-
-// ── LAYER 1: Memory Scrubber ──────────────────────────────────────────
-window._hariSchedWipe = true;
-var _wipeTimeout = null;
-var RESULT_SELS = '.rb,.rbig,.rsub,#pwOut,#aiBody,.res-inp';
-function scheduleWipe(ms){ clearTimeout(_wipeTimeout); _wipeTimeout = setTimeout(function(){ try{ document.querySelectorAll(RESULT_SELS).forEach(function(el){ el.textContent=''; el.value=''; }); }catch(e){} }, ms); }
-try{ document.addEventListener('visibilitychange', function(){ if(document.hidden) scheduleWipe(15000); else clearTimeout(_wipeTimeout); }); }catch(e){}
-
-// ── LAYER 2: Anti-Screenshot Blur ────────────────────────────────────
-try{ document.addEventListener('visibilitychange', function(){
-  var s = document.getElementById('hari-blur-shield');
-  if(document.hidden){
-    if(!s){ var st=document.createElement('style'); st.id='hari-blur-shield'; st.textContent='.rb,.rbig,.rsub,#pwOut,#aiBody{filter:blur(8px)!important}'; document.head.appendChild(st); }
-  } else { if(s) s.remove(); clearTimeout(_wipeTimeout); }
-}); }catch(e){}
-
-// ── LAYER 4: Alt+H Shoulder-Surf Dim ─────────────────────────────────
-var _dimmed = false;
-try{ document.addEventListener('keydown', function(e){ if(e.altKey && e.key==='h'){ _dimmed=!_dimmed; var w=document.querySelector('.app-wrap'); if(w) w.style.filter=_dimmed?'blur(20px) brightness(0.1)':''; e.preventDefault(); } }); }catch(e){}
-
-// ── LAYER 5: Clipboard Auto-Poison (45s) ─────────────────────────────
-var _clipTimer = null;
-try{
-  var _origWrite = navigator.clipboard && navigator.clipboard.writeText && navigator.clipboard.writeText.bind(navigator.clipboard);
-  if(_origWrite){ navigator.clipboard.writeText = function(text){ clearTimeout(_clipTimer); var p=_origWrite(text); _clipTimer=setTimeout(function(){ try{ navigator.clipboard.writeText(''); }catch(e){} }, 45000); return p; }; }
-}catch(e){}
-
-// ── LAYER 6: Memory Poison ────────────────────────────────────────────
-function poisonElement(el){ if(!el) return; var junk=''; for(var i=0;i<32;i++) junk+=String.fromCharCode(65+Math.random()*26|0); el.textContent=junk; el.value=junk; el.textContent=''; el.value=''; }
-try{ window.addEventListener('pagehide', function(){ document.querySelectorAll('.rbig,#pwOut,#aiBody').forEach(poisonElement); try{ sessionStorage.clear(); }catch(e2){} }); }catch(e){}
-
-// ── LAYER 8: DOM Mutation Blocker ─────────────────────────────────────
-try{ new MutationObserver(function(muts){ muts.forEach(function(m){ m.addedNodes.forEach(function(n){ if(n.tagName==='SCRIPT'){ n.remove(); } if(n.tagName==='IFRAME'&&n.src&&!n.src.startsWith('blob:')){ n.remove(); } }); }); }).observe(document.documentElement,{childList:true,subtree:true}); }catch(e){}
-
-// ── LAYER 9: Fetch / XHR Network Guard ───────────────────────────────
-window._hariAllowedOrigins = ['open.er-api.com'];
-var ALLOWED_ORIGINS = window._hariAllowedOrigins;
-try{
-  var _origFetch = window.fetch;
-  window.fetch = function(url, opts){ var u=String(url); if(!ALLOWED_ORIGINS.some(function(o){ return u.indexOf(o)>=0; })&&!u.startsWith('/')&&!u.startsWith('blob:')&&!u.startsWith('data:')){ return Promise.reject(new Error('Blocked by Hari Privacy Shield')); } return _origFetch.apply(window, arguments); };
-}catch(e){}
-// XHR override removed
-
-// ── LAYER 13: Print Blocker ───────────────────────────────────────────
-try{ window.addEventListener('beforeprint', function(){ var s=document.createElement('style'); s.id='hari-print-block'; s.textContent='@media print{body::before{content:"BLOCKED FOR PRIVACY";position:fixed;inset:0;background:#000;color:#f00;font-size:40px;display:flex;align-items:center;justify-content:center;z-index:999999}}'; document.head.appendChild(s); }); window.addEventListener('afterprint', function(){ var s=document.getElementById('hari-print-block'); if(s) s.remove(); }); }catch(e){}
-
-// ── LAYER 14: Drag Shield ─────────────────────────────────────────────
-try{ document.addEventListener('dragstart', function(e){ var t=e.target; if(t.closest('.rbig,#pwOut,#aiBody')){ e.preventDefault(); } }); }catch(e){}
-
-// ── LAYER 15: CSS Containment ─────────────────────────────────────────
-try{ var cs=document.createElement('style'); cs.textContent='.card.panel{contain:content}.rbig,.rsub{-webkit-touch-callout:none}'; document.head.appendChild(cs); }catch(e){}
-
-// ── LAYER 17: Frame Blocker ───────────────────────────────────────────
-try{ if(window.self!==window.top){ document.body.innerHTML='<div style="font-family:monospace;padding:40px;color:#f44;background:#111;height:100vh;display:flex;align-items:center;justify-content:center;font-size:16px;">🔒 HARI CALCX cannot run inside an embedded frame.</div>'; } }catch(e){}
-
-// ── LAYER 19: Input Sanitizer ─────────────────────────────────────────
-try{ document.addEventListener('input', function(e){ var t=e.target; if(t&&t.value){ t.value=t.value.replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F\u007F]/g,''); } },true); }catch(e){}
-
-// ── LAYER 20: Focus Blur ──────────────────────────────────────────────
-try{
-  window.addEventListener('blur', function(){ document.querySelectorAll('#pwOut,.rbig').forEach(function(el){ el.style.filter='blur(4px)'; }); });
-  window.addEventListener('focus', function(){ document.querySelectorAll('#pwOut,.rbig').forEach(function(el){ el.style.filter=''; }); });
-}catch(e){}
-
-// ── PHANTOM L01: Canvas Fingerprint Poisoner ─────────────────────────
-window._hariL01=true; // Canvas layer disabled
-
-
-// ── PHANTOM L02: WebRTC IP Leak Blocker ──────────────────────────────
-window._hariL02=true;
-try{ var _bRTC=function(){ throw new Error('WebRTC blocked'); }; ['RTCPeerConnection','webkitRTCPeerConnection','mozRTCPeerConnection'].forEach(function(k){ try{ if(window[k]) window[k]=_bRTC; }catch(e){ try{ Object.defineProperty(window,k,{get:function(){return _bRTC;},configurable:true}); }catch(e2){} } }); }catch(e){}
-
-// ── PHANTOM L03: Navigator Hardening ─────────────────────────────────
-window._hariL03=true;
-try{ [['hardwareConcurrency',4],['deviceMemory',4]].forEach(function(kv){ try{ Object.defineProperty(navigator,kv[0],{get:function(){return kv[1];},configurable:true}); }catch(e){} }); }catch(e){}
-
-// ── PHANTOM L04: Battery API Blocker ─────────────────────────────────
-window._hariL04=true;
-try{ if(navigator.getBattery){ try{ Object.defineProperty(navigator,'getBattery',{value:function(){return Promise.reject(new Error('Blocked'));},configurable:true,writable:true}); }catch(e){ navigator.getBattery=function(){return Promise.reject(new Error('Blocked'));}; } } }catch(e){}
-
-// ── PHANTOM L06: Beacon API Blocker ──────────────────────────────────
-window._hariL06=true;
-try{ var _bBeacon=function(url){ return false; }; try{ Object.defineProperty(navigator,'sendBeacon',{value:_bBeacon,configurable:true,writable:true}); }catch(e){ try{ navigator.sendBeacon=_bBeacon; }catch(e2){} } }catch(e){}
-
-// ── PHANTOM L07: Clipboard Read Blocker ──────────────────────────────
-window._hariL07=true;
-window._clipReadBlocked=true;
-try{ if(navigator.clipboard){ var _bClip=function(){return Promise.reject(new Error('Blocked'));}; try{ Object.defineProperty(navigator.clipboard,'readText',{value:_bClip,configurable:true,writable:true}); }catch(e){ try{ navigator.clipboard.readText=_bClip; }catch(e2){} } try{ Object.defineProperty(navigator.clipboard,'read',{value:_bClip,configurable:true,writable:true}); }catch(e){ try{ navigator.clipboard.read=_bClip; }catch(e2){} } } }catch(e){}
-
-// ── PHANTOM L08: WebGL GPU Spoofer ───────────────────────────────────
-window._hariL08=true; // WebGL layer disabled
-
-// ── PHANTOM L09: Audio Fingerprint Noise ─────────────────────────────
-window._hariL09=true; // Audio layer disabled
-
-// ── PHANTOM L10: IndexedDB Blocker ───────────────────────────────────
-window._hariL10=true;
-try{ if(window.indexedDB&&window.indexedDB.open){ var _origIDB=window.indexedDB.open.bind(window.indexedDB); window.indexedDB.open=function(){ var req={result:null,error:new Error('Blocked'),onsuccess:null,onerror:null}; setTimeout(function(){if(req.onerror)req.onerror({target:req});},0); return req; }; } }catch(e){}
-try{ if(window.caches&&window.caches.open){ window.caches.open=function(){return Promise.reject(new Error('CacheStorage blocked'));}; } }catch(e){}
-
-// ── PHANTOM L11: Cross-Tab Leak Blocker ──────────────────────────────
-window._hariL11=true;
-try{ window.BroadcastChannel=function(){return{postMessage:function(){},close:function(){},addEventListener:function(){},removeEventListener:function(){}}}; }catch(e){}
-try{ window.SharedWorker=function(){throw new Error('SharedWorker blocked');}; }catch(e){}
-
-// ── PHANTOM L12: Screen Resolution Spoof ─────────────────────────────
-window._hariL12=true;
-window._scrW=Math.round(screen.width/100)*100;
-try{ var _scrH=Math.round(screen.height/100)*100; ['width','availWidth'].forEach(function(k){ try{ Object.defineProperty(screen,k,{get:function(){return window._scrW;},configurable:true}); }catch(e){} }); ['height','availHeight'].forEach(function(k){ try{ Object.defineProperty(screen,k,{get:function(){return _scrH;},configurable:true}); }catch(e){} }); ['colorDepth','pixelDepth'].forEach(function(k){ try{ Object.defineProperty(screen,k,{get:function(){return 24;},configurable:true}); }catch(e){} }); }catch(e){}
-
-// ── PHANTOM L13: Font Fingerprint Blocker ────────────────────────────
-window._hariL13=true; // MeasureText layer disabled
-
-// ── PHANTOM L14: Share API Blocker ───────────────────────────────────
-window._hariL14=true;
-try{ var _bShare=function(){return Promise.reject(new Error('Blocked'));}; try{ Object.defineProperty(navigator,'share',{value:_bShare,configurable:true,writable:true}); }catch(e){ try{ navigator.share=_bShare; }catch(e2){} } try{ Object.defineProperty(navigator,'canShare',{value:function(){return false;},configurable:true,writable:true}); }catch(e){} }catch(e){}
-
-// ── PHANTOM L15: Autofill Exfiltration Guard ─────────────────────────
-window._hariL15=true;
-try{ document.addEventListener('animationstart',function(e){ if(e.animationName==='hari-autofill-detect'&&e.target!==document.activeElement){ e.target.value=''; } },true); var afs=document.createElement('style'); afs.textContent='@keyframes hari-autofill-detect{from{opacity:1}to{opacity:1}}input:-webkit-autofill,input:autofill{animation-name:hari-autofill-detect;animation-duration:1ms}'; document.head.appendChild(afs); }catch(e){}
-
-// ── PHANTOM L17: Object.freeze Constants ─────────────────────────────
-window._hariL17=true;
-try{ if(typeof RATES_FALLBACK!=='undefined') Object.freeze(RATES_FALLBACK); }catch(e){}
-try{ if(typeof CRYPTO!=='undefined') Object.freeze(CRYPTO); }catch(e){}
-
-// ── PHANTOM L18: 3-Pass Deep Wipe on Exit ────────────────────────────
-try{ window.addEventListener('pagehide',function(){ try{ var inp=document.querySelectorAll('input,textarea'); [1,2,3].forEach(function(p){ inp.forEach(function(el){ if(!el.readOnly) el.value=p<3?(p===1?Array(20).fill('1').join(''):Array(20).fill('0').join('')):Array(16).fill(0).map(function(){return String.fromCharCode(65+Math.random()*26|0);}).join(''); }); }); inp.forEach(function(el){ if(!el.readOnly) el.value=''; }); try{sessionStorage.clear();}catch(e2){} }catch(e2){} },{once:true}); }catch(e){}
-
-// ── PHANTOM L19: CSS History Sniffing Blocker ────────────────────────
-window._hariL19=true;
-try{ var hs=document.createElement('style'); hs.textContent='a:visited{color:inherit!important}a:visited *{color:inherit!important}'; document.head.appendChild(hs); }catch(e){}
-
-// ── PHANTOM L20: Stealth Panic Mode (Alt+R / long-press badge) ───────
-window._hariStealthMode=true;
-var _stealthActive=false, _stealthTimer=null, _stealthContent=null;
-function _enterStealth(){ if(_stealthActive)return; _stealthActive=true; _stealthContent=document.body.innerHTML; document.body.innerHTML='<div style="font-family:system-ui;padding:60px;text-align:center;background:#f5f5f5;min-height:100vh;color:#333"><h1 style="font-size:72px;margin:0">404</h1><h2>Page Not Found</h2><p>The page you are looking for might have been removed.</p><a href="/" style="color:#0066cc">Go to Homepage</a></div>'; document.title='404 Not Found'; }
-function _exitStealth(){ if(!_stealthActive)return; _stealthActive=false; document.body.innerHTML=_stealthContent; document.title='HARI CALCX'; _stealthContent=null; }
-window._enterStealth=_enterStealth; window._exitStealth=_exitStealth;
-try{ document.addEventListener('keydown',function(e){ if(e.altKey&&(e.key==='r'||e.key==='R')){ _stealthActive?_exitStealth():_enterStealth(); } }); }catch(e){}
-
-// ── Privacy Badge ─────────────────────────────────────────────────────
-setTimeout(function(){
-  var existing=document.getElementById('ultraShieldBadge');
-  if(existing){ existing.innerHTML='🛡️ 35-Layer Privacy'; existing.style.background='linear-gradient(135deg,#7c3aed,#0891b2,#059669)'; }
-  // Long-press badge = panic
-  var badge=document.getElementById('ultraShieldBadge')||existing;
-  if(badge){
-    badge.title='Click: Privacy info | Long-press 2s: Stealth mode | Alt+R: toggle';
-    var _pt=null;
-    badge.addEventListener('mousedown',function(){_pt=setTimeout(_enterStealth,2000);});
-    badge.addEventListener('mouseup',function(){clearTimeout(_pt);});
-    badge.addEventListener('mouseleave',function(){clearTimeout(_pt);});
-    badge.addEventListener('touchstart',function(){_pt=setTimeout(_enterStealth,2000);},{passive:true});
-    badge.addEventListener('touchend',function(){clearTimeout(_pt);},{passive:true});
-  }
-},400);
-
-console.log('%c🛡️ HARI PRIVACY ENGINE — 35 layers active','color:#7c3aed;font-weight:bold;font-size:13px');
-
-
-
-
 function showPrivacyInfo(){
-  document.getElementById('privModal').classList.add('show');
+  const modal=document.getElementById('privModal');
+  if(modal)modal.classList.add('show');
 }
-
-function closePrivModal(){document.getElementById('privModal').classList.remove('show');}
-// Close on Escape key
+function closePrivModal(){
+  const modal=document.getElementById('privModal');
+  if(modal)modal.classList.remove('show');
+}
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePrivModal();});
 
-
-
-IIFE
-
-
+// This page does not monkey-patch the browser clipboard, network stack, or device APIs.
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
 function copyTxt(t){if(!t)return;navigator.clipboard.writeText(t).then(()=>toast('Copied!'));}
 

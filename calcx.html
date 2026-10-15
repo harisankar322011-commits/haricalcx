@@ -1420,6 +1420,16 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
 <div class="pomo-actions"><button type="button" class="btn btn-pri" id="pomoStart" onclick="togglePomo()">▶ START</button><button type="button" class="btn btn-sec" onclick="resetPomo()">↺ RESET</button><button type="button" class="btn btn-sec" onclick="skipPomo()">SKIP PHASE →</button></div>
 <div class="budget-grid" style="margin-top:12px"><div class="field"><label for="pomoFocusLength">FOCUS MINUTES</label><input class="inp" id="pomoFocusLength" type="number" min="1" max="180" step="1" value="25" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoShortLength">SHORT BREAK MINUTES</label><input class="inp" id="pomoShortLength" type="number" min="1" max="60" step="1" value="5" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoLongLength">LONG BREAK MINUTES</label><input class="inp" id="pomoLongLength" type="number" min="1" max="90" step="1" value="15" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoGoal">FOCUS GOAL (SESSIONS)</label><input class="inp" id="pomoGoal" type="number" min="1" max="20" step="1" value="4" onchange="renderPomo()"></div></div>
 <div style="font-size:9px;color:var(--tm);line-height:1.5;margin-top:10px">The countdown uses your device clock to reduce drift when the browser is backgrounded.</div></div></div>
+
+<div class="card panel" id="tab-equation"><div class="sec">
+<div class="sec-h"><span>🧮 EQUATION SOLVER</span><span style="font-size:9px;color:var(--tm)">STEP BY STEP</span></div>
+<div class="formula-tools"><button class="qb active" id="eqLinearMode" type="button" onclick="setEquationMode('linear')">LINEAR · ax + b = c</button><button class="qb" id="eqQuadraticMode" type="button" onclick="setEquationMode('quadratic')">QUADRATIC · ax² + bx + c = 0</button></div>
+<div id="eqLinearFields" class="budget-grid" style="margin-top:10px"><div class="field"><label for="eqLinearA">COEFFICIENT a</label><input class="inp" id="eqLinearA" type="number" step="any" value="2" oninput="solveEquation()"></div><div class="field"><label for="eqLinearB">CONSTANT b</label><input class="inp" id="eqLinearB" type="number" step="any" value="3" oninput="solveEquation()"></div><div class="field"><label for="eqLinearC">RIGHT SIDE c</label><input class="inp" id="eqLinearC" type="number" step="any" value="11" oninput="solveEquation()"></div></div>
+<div id="eqQuadraticFields" class="budget-grid" style="display:none;margin-top:10px"><div class="field"><label for="eqQuadA">COEFFICIENT a</label><input class="inp" id="eqQuadA" type="number" step="any" value="1" oninput="solveEquation()"></div><div class="field"><label for="eqQuadB">COEFFICIENT b</label><input class="inp" id="eqQuadB" type="number" step="any" value="-3" oninput="solveEquation()"></div><div class="field"><label for="eqQuadC">COEFFICIENT c</label><input class="inp" id="eqQuadC" type="number" step="any" value="2" oninput="solveEquation()"></div></div>
+<div class="rb" style="margin-top:14px"><div class="rsub">SOLUTION</div><div class="rbig" id="eqAnswer" style="overflow-wrap:anywhere">x = 4</div><div class="rsub" id="eqCheck"></div></div>
+<div class="rb" style="margin-top:10px"><div class="rsub">WORKING</div><div id="eqSteps" style="font-size:11px;line-height:1.8;color:var(--tx);white-space:pre-wrap;margin-top:6px"></div></div>
+<div style="font-size:9px;color:var(--tm);margin-top:10px;line-height:1.5">Supports linear equations, repeated roots, two real roots, complex roots, and degenerate cases.</div>
+</div></div>
 </div><!-- /wrapper -->
 <div class="toast" id="toast">Copied!</div>
 <div id="orient-pill"></div>
@@ -1548,6 +1558,8 @@ const TOOLS=[
   {name:'Formula & Reference Library',tab:'formula',idx:65,tags:'formulas equations maths physics geometry algebra finance statistics reference'},
   {name:'Monthly Budget Planner',tab:'budget',idx:66,tags:'budget expenses income savings spending money monthly bills'},
   {name:'Pomodoro Focus Timer',tab:'pomo',idx:67,tags:'pomodoro focus study productivity timer breaks concentration'}
+,
+  {name:'Equation Solver',tab:'equation',idx:68,tags:'equation solver algebra linear quadratic roots discriminant math student'}
 ];
 function doSearch(v){
   const sr=document.getElementById('sr');
@@ -1737,7 +1749,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Escape')clrAll();else if(e.key==='(')inCh('(');else if(e.key===')')inCh(')');
 });
 // TOOLBOX — all-tools grid overlay
-const TOOL_ICONS={sci:'🔬',base:'🔢',pct:'%',gst:'🧾',disc:'🏷️',currency:'💱',unit:'📐',date:'📅',emi:'🏦',sip:'📈',tip:'🍽️',bmi:'⚖️',stats:'📊',geo:'📐',matrix:'🔲',frac:'½',roman:'Ⅻ',pw:'🔐',text:'📝',sw:'⏱️',cd:'⏳',wc:'🌍',n2w:'💬',fuel:'⛽',elec:'⚡',grade:'🎓',cc:'💳',rand:'🎲',bday:'🎂',pace:'🏃',paint:'🎨',wdays:'📆',ratio:'📺',crypto:'₿',bpm:'🎵',wave:'〰️',chem:'⚗️',cal:'🥗',color:'🎨',loan2:'⚖️',hash:'#️⃣',scinot:'🔭',grad:'🌈',sleep:'😴',unitprice:'🛒',bodyfat:'💪',mortgage:'🏠',love:'❤️',invoice:'📄',prime:'🔢',sqft:'📏',burn:'🔥',numseq:'∞',datasize:'💾',feels:'🌡️',interest:'💰',sdt:'🚀',water:'💧',profitloss:'📊',agedetail:'🎂',tzconv:'🌐',romanmath:'Ⅻ',discchain:'🏷️',numtrivia:'🔢',macro:'🥗',formula:'📚',budget:'💰',pomo:'🍅'};
+const TOOL_ICONS={sci:'🔬',base:'🔢',pct:'%',gst:'🧾',disc:'🏷️',currency:'💱',unit:'📐',date:'📅',emi:'🏦',sip:'📈',tip:'🍽️',bmi:'⚖️',stats:'📊',geo:'📐',matrix:'🔲',frac:'½',roman:'Ⅻ',pw:'🔐',text:'📝',sw:'⏱️',cd:'⏳',wc:'🌍',n2w:'💬',fuel:'⛽',elec:'⚡',grade:'🎓',cc:'💳',rand:'🎲',bday:'🎂',pace:'🏃',paint:'🎨',wdays:'📆',ratio:'📺',crypto:'₿',bpm:'🎵',wave:'〰️',chem:'⚗️',cal:'🥗',color:'🎨',loan2:'⚖️',hash:'#️⃣',scinot:'🔭',grad:'🌈',sleep:'😴',unitprice:'🛒',bodyfat:'💪',mortgage:'🏠',love:'❤️',invoice:'📄',prime:'🔢',sqft:'📏',burn:'🔥',numseq:'∞',datasize:'💾',feels:'🌡️',interest:'💰',sdt:'🚀',water:'💧',profitloss:'📊',agedetail:'🎂',tzconv:'🌐',romanmath:'Ⅻ',discchain:'🏷️',numtrivia:'🔢',macro:'🥗',formula:'📚',budget:'💰',pomo:'🍅',equation:'🧮'};
 let _toolboxMode='all';
 function readToolList(key){
   try{
@@ -1877,6 +1889,8 @@ const TAB_DEFS=[
   {id:'formula',label:'FORMULAS'},
   {id:'budget',label:'BUDGET'},
   {id:'pomo',label:'POMODORO'}
+,
+  {id:'equation',label:'EQUATION SOLVER'}
 ];
 (function buildNav(){
   const nav=document.getElementById('navTabs');
@@ -3803,6 +3817,45 @@ function pomoFinish(){const was=pomoMode;pomoRunning=false;pomoRemaining=0;stopP
 function resetPomo(){stopPomoInterval();pomoRunning=false;pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;renderPomo();}
 function skipPomo(){if(pomoMode==='focus')pomoMode=(pomoCompleted+1)%4===0?'long':'short';else pomoMode='focus';pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;pomoRunning=false;stopPomoInterval();renderPomo();}
 renderPomo();
+
+
+let _equationMode='linear';
+function setEquationMode(mode){
+ _equationMode=mode==='quadratic'?'quadratic':'linear';
+ document.getElementById('eqLinearFields').style.display=_equationMode==='linear'?'grid':'none';
+ document.getElementById('eqQuadraticFields').style.display=_equationMode==='quadratic'?'grid':'none';
+ document.getElementById('eqLinearMode').classList.toggle('active',_equationMode==='linear');
+ document.getElementById('eqQuadraticMode').classList.toggle('active',_equationMode==='quadratic');solveEquation();
+}
+function equationNumber(id){const raw=document.getElementById(id).value;if(raw.trim()==='')return NaN;return Number(raw);}
+function equationFmt(n){if(!Number.isFinite(n))return String(n);if(Math.abs(n)<1e-12)return '0';return Number(n.toPrecision(10)).toString();}
+function equationOut(answer,steps,check=''){document.getElementById('eqAnswer').textContent=answer;document.getElementById('eqSteps').textContent=steps;document.getElementById('eqCheck').textContent=check;}
+function solveEquation(){
+ const nl='\n';
+ if(_equationMode==='linear'){
+  const a=equationNumber('eqLinearA'),b=equationNumber('eqLinearB'),c=equationNumber('eqLinearC');
+  if(![a,b,c].every(Number.isFinite)){equationOut('Enter all coefficients','Use valid finite numbers for a, b and c.');return;}
+  const rhs=c-b;
+  if(a===0){if(rhs===0)equationOut('Infinitely many solutions','0x + '+equationFmt(b)+' = '+equationFmt(c)+nl+'Both sides are equal, so every real x is a solution.');else equationOut('No solution','0x + '+equationFmt(b)+' = '+equationFmt(c)+nl+'The constants are different, so the equation cannot be satisfied.');return;}
+  const x=rhs/a;
+  equationOut('x = '+equationFmt(x),'Given: ax + b = c'+nl+'Substitute: '+equationFmt(a)+'x + ('+equationFmt(b)+') = '+equationFmt(c)+nl+'Subtract b: '+equationFmt(a)+'x = '+equationFmt(rhs)+nl+'Divide by a: x = '+equationFmt(rhs)+' / '+equationFmt(a)+nl+'Solution: x = '+equationFmt(x),'Check: ax + b = '+equationFmt(a*x+b)+' (target '+equationFmt(c)+')');return;
+ }
+ const a=equationNumber('eqQuadA'),b=equationNumber('eqQuadB'),cc=equationNumber('eqQuadC');
+ if(![a,b,cc].every(Number.isFinite)){equationOut('Enter all coefficients','Use valid finite numbers for a, b and c.');return;}
+ if(a===0){
+  if(b===0){equationOut(cc===0?'Infinitely many solutions':'No solution','Here a = 0 and b = 0, so the equation reduces to '+equationFmt(cc)+' = 0.');}
+  else{const x=-cc/b;equationOut('x = '+equationFmt(x),'Since a = 0, this is linear: '+equationFmt(b)+'x + ('+equationFmt(cc)+') = 0'+nl+equationFmt(b)+'x = '+equationFmt(-cc)+nl+'x = '+equationFmt(x));}
+  return;
+ }
+ const d=b*b-4*a*cc,den=2*a;
+ const steps='Given: ax² + bx + c = 0'+nl+'a = '+equationFmt(a)+', b = '+equationFmt(b)+', c = '+equationFmt(cc)+nl+'Discriminant: D = b² − 4ac'+nl+'D = ('+equationFmt(b)+')² − 4('+equationFmt(a)+')('+equationFmt(cc)+') = '+equationFmt(d);
+ if(d>0){
+  const root=Math.sqrt(d),x1=(-b+root)/den,x2=(-b-root)/den;
+  equationOut('x₁ = '+equationFmt(x1)+nl+'x₂ = '+equationFmt(x2),steps+nl+'Since D > 0, there are two real roots.'+nl+'x = (−b ± √D)/(2a)'+nl+'x₁ = '+equationFmt(x1)+nl+'x₂ = '+equationFmt(x2));
+ }else if(d===0){const x=-b/den;equationOut('x = '+equationFmt(x),steps+nl+'Since D = 0, there is one repeated real root.'+nl+'x = −b/(2a) = '+equationFmt(x));}
+ else{const real=-b/den,imag=Math.sqrt(-d)/Math.abs(den);equationOut('x₁ = '+equationFmt(real)+' + '+equationFmt(imag)+'i'+nl+'x₂ = '+equationFmt(real)+' − '+equationFmt(imag)+'i',steps+nl+'Since D < 0, the roots are complex.'+nl+'Real part = '+equationFmt(real)+nl+'Imaginary magnitude = '+equationFmt(imag));}
+}
+solveEquation();
 
 function showPrivacyInfo(){
   const modal=document.getElementById('privModal');

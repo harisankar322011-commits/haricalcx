@@ -1645,6 +1645,8 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
     <div class="priv-row"><span class="priv-icon">🗂️</span><div class="priv-text"><strong>Tab-only preferences</strong><br>Theme, currency-rate cache, favourites, and recent tools use session storage. They are intended to last only for the current tab session.</div></div>
     <div class="priv-row"><span class="priv-icon">🛡️</span><div class="priv-text"><strong>HTTP security headers</strong><br>Netlify serves clickjacking, MIME-sniffing, referrer, permissions, and Content Security Policy headers. Inline JavaScript is still allowed for this single-file app, so these are protective layers—not a guarantee against every script-injection bug.</div></div>
     <div class="priv-row"><span class="priv-icon">⚠️</span><div class="priv-text"><strong>Honest limits</strong><br>No website can stop someone with access to your device from taking screenshots, inspecting the page, using browser extensions, or reading what is displayed. Keep sensitive information off shared or compromised devices.</div></div>
+    <button type="button" class="btn btn-sec" onclick="clearCalcxSessionPreferences()" style="width:100%;margin-top:12px;">CLEAR SAVED TAB DATA</button>
+    <div style="font-size:9px;color:var(--tm);text-align:center;margin-top:5px;">Removes theme, currency cache, favourites, and recent-tool preferences for this tab, then reloads.</div>
     <div style="margin-top:12px;padding:10px;background:var(--s2);border:1px solid var(--bd);border-radius:10px;font-size:10px;color:var(--tm);line-height:1.6;">
       No sign-in or analytics service is built into this page. Security depends on the browser, device, HTTPS connection, and the deployed site configuration.
     </div>
@@ -3888,6 +3890,13 @@ function showPrivacyInfo(){
 function closePrivModal(){
   const modal=document.getElementById('privModal');
   if(modal)modal.classList.remove('show');
+}
+function clearCalcxSessionPreferences(){
+  if(!window.confirm('Clear this tab’s CalcX theme, currency cache, favourites, and recent tools?'))return;
+  try{
+    ['calcx-theme','hari_calcx_rates_v1','hari_calcx_rates_ts_v1','calcx-favourites-v1','calcx-recents-v1'].forEach(k=>sessionStorage.removeItem(k));
+  }catch(e){}
+  window.location.reload();
 }
 document.addEventListener('keydown',function(e){if(e.key==='Escape')closePrivModal();});
 

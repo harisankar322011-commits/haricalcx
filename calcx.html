@@ -379,6 +379,8 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
   .cd-d{font-size:32px;}
 }
 
+
+.formula-tools{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0}.formula-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;margin-top:10px}.formula-card{background:var(--s2);border:1px solid var(--bd);border-radius:12px;padding:12px;min-width:0}.formula-title{font-size:12px;font-weight:800;color:var(--tx);margin-bottom:5px}.formula-equation{font-family:var(--font-mono);font-size:12px;color:var(--a2);background:var(--ib);border-radius:8px;padding:9px;overflow-wrap:anywhere;margin:7px 0}.formula-desc{font-size:10px;color:var(--tm);line-height:1.5}.formula-actions{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.formula-actions button{font-size:9px}.budget-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.budget-row{display:grid;grid-template-columns:minmax(0,1fr) 118px 30px;gap:6px;align-items:center;margin:6px 0}.budget-row input{min-width:0;width:100%}.budget-remove{border:1px solid var(--bd);background:var(--s2);color:var(--a3);border-radius:8px;height:34px;cursor:pointer}.budget-bar{height:7px;background:var(--s3);border-radius:8px;overflow:hidden;flex:1}.budget-bar>span{display:block;height:100%;background:var(--a2);border-radius:8px}.budget-break-row{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:10px}.pomo-clock{font-family:var(--font-mono);font-size:clamp(42px,12vw,66px);font-weight:800;letter-spacing:-.06em;text-align:center;color:var(--a1);padding:16px 0 8px;font-variant-numeric:tabular-nums}.pomo-ring{height:8px;background:var(--s3);border-radius:8px;overflow:hidden;margin:8px 0 14px}.pomo-ring span{height:100%;display:block;width:100%;background:var(--a2);transition:width .2s linear}.pomo-modes,.pomo-actions{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;margin:10px 0}.pomo-actions button{min-width:90px}.h-actions{display:flex;gap:5px;flex-wrap:wrap;align-items:center}.h-actions button{font-size:9px;padding:4px 7px}.sci-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:7px}.sci-actions button{font-size:9px;padding:4px 8px}@media(max-width:520px){.formula-grid{grid-template-columns:1fr}.budget-grid{grid-template-columns:1fr}.budget-row{grid-template-columns:minmax(0,1fr) 92px 30px}.formula-card{padding:10px}}
 </style>
 </head>
 <body>
@@ -446,7 +448,7 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
     <div class="d-mem" id="dmem">M</div>
     <button class="d-htb" onclick="toggleHist()">HISTORY ▾</button>
     <div class="d-expr" id="dexpr"></div>
-    <div class="d-val" id="dval">0</div>
+    <div class="d-val" id="dval">0</div><div class="sci-actions"><button class="mb" type="button" onclick="copyTxt(document.getElementById('dval').textContent)">COPY RESULT</button><button class="mb" type="button" onclick="copyTxt(document.getElementById('dexpr').textContent)">COPY EXPRESSION</button></div>
   </div>
   <div class="mem-bar">
     <button class="mb" onclick="mC()">MC</button><button class="mb" onclick="mR()">MR</button>
@@ -455,7 +457,7 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
   </div>
   <div class="hist-p" id="histP">
     <div class="hist-i">
-      <div class="h-hd"><span class="h-t">CALCULATION HISTORY</span><button class="h-cl" onclick="clrHist()">CLEAR</button></div>
+      <div class="h-hd" style="gap:8px;flex-wrap:wrap"><span class="h-t">CALCULATION HISTORY</span><div class="h-actions"><button class="h-cl" onclick="copyHistory()">COPY</button><button class="h-cl" onclick="downloadHistoryCsv()">EXPORT CSV</button><button class="h-cl" onclick="clrHist()">CLEAR</button></div></div>
       <div id="histL"><div class="h-em">No history yet</div></div>
     </div>
   </div>
@@ -1396,6 +1398,28 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
   </div>
 </div>
 
+
+<div class="card panel" id="tab-formula"><div class="sec">
+<div class="sec-h"><span>📚 FORMULA &amp; REFERENCE LIBRARY</span><span style="font-size:9px;color:var(--tm)">OFFLINE</span></div>
+<div class="field" style="margin-top:10px"><label for="formulaSearch">SEARCH FORMULAS, TOPICS OR SYMBOLS</label><input class="inp" id="formulaSearch" type="search" placeholder="Try: speed, circle, compound interest…" autocomplete="off" oninput="renderFormulaLibrary()"></div>
+<div class="formula-tools" id="formulaFilters"></div><div style="font-size:10px;color:var(--tm);line-height:1.5">Quick reference for maths, geometry, physics, finance and statistics. Copy equations into notes or assignments.</div>
+<div class="formula-grid" id="formulaGrid"></div><div id="formulaEmpty" style="display:none;text-align:center;padding:18px;color:var(--tm);font-size:11px">No formulas match your search.</div></div></div>
+
+<div class="card panel" id="tab-budget"><div class="sec">
+<div class="sec-h"><span>💰 MONTHLY BUDGET PLANNER</span><span style="font-size:9px;color:var(--tm)">PRIVATE · THIS TAB</span></div>
+<div class="budget-grid" style="margin-top:12px"><div class="field"><label for="budgetIncome">MONTHLY TAKE-HOME INCOME (₹)</label><input class="inp" id="budgetIncome" type="number" min="0" step="0.01" value="30000" oninput="calculateBudget()"></div><div class="field"><label for="budgetTarget">TARGET SAVINGS (%)</label><input class="inp" id="budgetTarget" type="number" min="0" max="100" step="1" value="20" oninput="calculateBudget()"></div></div>
+<div class="h-hd" style="margin:14px 0 6px"><span class="h-t">MONTHLY EXPENSES</span><button class="qb" type="button" onclick="addBudgetRow()">+ ADD EXPENSE</button></div>
+<div style="font-size:9px;color:var(--tm);margin:4px 0 8px">Enter your own categories and estimates. Values stay in this page and are not uploaded.</div><div id="budgetRows"></div>
+<div class="budget-grid" style="margin-top:14px"><div class="rb"><div class="rsub">TOTAL EXPENSES</div><div class="rbig" id="budgetExpenseTotal">₹0.00</div></div><div class="rb"><div class="rsub">LEFT AFTER EXPENSES</div><div class="rbig" id="budgetLeft">₹0.00</div><div class="rsub" id="budgetLeftNote">0% of income remains</div></div><div class="rb"><div class="rsub">TARGET SAVINGS</div><div class="rbig" id="budgetTargetAmount">₹0.00</div><div class="rsub" id="budgetTargetStatus">Enter income and expenses</div></div><div class="rb"><div class="rsub">BUDGET USED</div><div class="rbig" id="budgetUsed">0%</div><div class="budget-bar" style="margin-top:8px"><span id="budgetUsedBar" style="width:0%"></span></div></div></div>
+<div class="h-hd" style="margin-top:15px"><span class="h-t">EXPENSE BREAKDOWN</span><button class="qb" type="button" onclick="resetBudget()">RESET</button></div><div id="budgetBreakdown" style="margin-top:8px"></div><div style="font-size:9px;color:var(--tm);line-height:1.5;margin-top:10px">Planning aid only. No bank connection or financial advice. Your entries are not saved after reload.</div></div></div>
+
+<div class="card panel" id="tab-pomo"><div class="sec">
+<div class="sec-h"><span>⏱️ POMODORO FOCUS TIMER</span><span style="font-size:9px;color:var(--tm)">NO SIGN-IN</span></div>
+<div class="pomo-modes"><button type="button" class="qb active" id="pomoFocusMode" onclick="setPomoMode('focus')">🎯 FOCUS · 25 MIN</button><button type="button" class="qb" id="pomoShortMode" onclick="setPomoMode('short')">☕ SHORT BREAK · 5 MIN</button><button type="button" class="qb" id="pomoLongMode" onclick="setPomoMode('long')">🌿 LONG BREAK · 15 MIN</button></div>
+<div class="rb" style="margin-top:12px;text-align:center"><div class="rsub" id="pomoStatus">READY TO FOCUS</div><div class="pomo-clock" id="pomoClock" role="timer" aria-live="off">25:00</div><div class="pomo-ring"><span id="pomoProgress"></span></div><div style="font-size:10px;color:var(--tm)" id="pomoRound">Sessions completed: 0 · Long break every 4 focus sessions</div></div>
+<div class="pomo-actions"><button type="button" class="btn btn-pri" id="pomoStart" onclick="togglePomo()">▶ START</button><button type="button" class="btn btn-sec" onclick="resetPomo()">↺ RESET</button><button type="button" class="btn btn-sec" onclick="skipPomo()">SKIP PHASE →</button></div>
+<div class="budget-grid" style="margin-top:12px"><div class="field"><label for="pomoFocusLength">FOCUS MINUTES</label><input class="inp" id="pomoFocusLength" type="number" min="1" max="180" step="1" value="25" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoShortLength">SHORT BREAK MINUTES</label><input class="inp" id="pomoShortLength" type="number" min="1" max="60" step="1" value="5" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoLongLength">LONG BREAK MINUTES</label><input class="inp" id="pomoLongLength" type="number" min="1" max="90" step="1" value="15" onchange="updatePomoDurations()"></div><div class="field"><label for="pomoGoal">FOCUS GOAL (SESSIONS)</label><input class="inp" id="pomoGoal" type="number" min="1" max="20" step="1" value="4" onchange="renderPomo()"></div></div>
+<div style="font-size:9px;color:var(--tm);line-height:1.5;margin-top:10px">The countdown uses your device clock to reduce drift when the browser is backgrounded.</div></div></div>
 </div><!-- /wrapper -->
 <div class="toast" id="toast">Copied!</div>
 <div id="orient-pill"></div>
@@ -1521,6 +1545,9 @@ const TOOLS=[
   {name:'Discount Chain',tab:'discchain',idx:62,tags:'successive discount chain multiple percent'},
   {name:'Number Properties',tab:'numtrivia',idx:63,tags:'prime factors divisors perfect square'},
   {name:'Macro Calculator',tab:'macro',idx:64,tags:'protein carbs fat macros calories diet'},
+  {name:'Formula & Reference Library',tab:'formula',idx:65,tags:'formulas equations maths physics geometry algebra finance statistics reference'},
+  {name:'Monthly Budget Planner',tab:'budget',idx:66,tags:'budget expenses income savings spending money monthly bills'},
+  {name:'Pomodoro Focus Timer',tab:'pomo',idx:67,tags:'pomodoro focus study productivity timer breaks concentration'}
 ];
 function doSearch(v){
   const sr=document.getElementById('sr');
@@ -1710,7 +1737,7 @@ document.addEventListener('keydown',e=>{
   else if(e.key==='Escape')clrAll();else if(e.key==='(')inCh('(');else if(e.key===')')inCh(')');
 });
 // TOOLBOX — all-tools grid overlay
-const TOOL_ICONS={sci:'🔬',base:'🔢',pct:'%',gst:'🧾',disc:'🏷️',currency:'💱',unit:'📐',date:'📅',emi:'🏦',sip:'📈',tip:'🍽️',bmi:'⚖️',stats:'📊',geo:'📐',matrix:'🔲',frac:'½',roman:'Ⅻ',pw:'🔐',text:'📝',sw:'⏱️',cd:'⏳',wc:'🌍',n2w:'💬',fuel:'⛽',elec:'⚡',grade:'🎓',cc:'💳',rand:'🎲',bday:'🎂',pace:'🏃',paint:'🎨',wdays:'📆',ratio:'📺',crypto:'₿',bpm:'🎵',wave:'〰️',chem:'⚗️',cal:'🥗',color:'🎨',loan2:'⚖️',hash:'#️⃣',scinot:'🔭',grad:'🌈',sleep:'😴',unitprice:'🛒',bodyfat:'💪',mortgage:'🏠',love:'❤️',invoice:'📄',prime:'🔢',sqft:'📏',burn:'🔥',numseq:'∞',datasize:'💾',feels:'🌡️',interest:'💰',sdt:'🚀',water:'💧',profitloss:'📊',agedetail:'🎂',tzconv:'🌐',romanmath:'Ⅻ',discchain:'🏷️',numtrivia:'🔢',macro:'🥗'};
+const TOOL_ICONS={sci:'🔬',base:'🔢',pct:'%',gst:'🧾',disc:'🏷️',currency:'💱',unit:'📐',date:'📅',emi:'🏦',sip:'📈',tip:'🍽️',bmi:'⚖️',stats:'📊',geo:'📐',matrix:'🔲',frac:'½',roman:'Ⅻ',pw:'🔐',text:'📝',sw:'⏱️',cd:'⏳',wc:'🌍',n2w:'💬',fuel:'⛽',elec:'⚡',grade:'🎓',cc:'💳',rand:'🎲',bday:'🎂',pace:'🏃',paint:'🎨',wdays:'📆',ratio:'📺',crypto:'₿',bpm:'🎵',wave:'〰️',chem:'⚗️',cal:'🥗',color:'🎨',loan2:'⚖️',hash:'#️⃣',scinot:'🔭',grad:'🌈',sleep:'😴',unitprice:'🛒',bodyfat:'💪',mortgage:'🏠',love:'❤️',invoice:'📄',prime:'🔢',sqft:'📏',burn:'🔥',numseq:'∞',datasize:'💾',feels:'🌡️',interest:'💰',sdt:'🚀',water:'💧',profitloss:'📊',agedetail:'🎂',tzconv:'🌐',romanmath:'Ⅻ',discchain:'🏷️',numtrivia:'🔢',macro:'🥗',formula:'📚',budget:'💰',pomo:'🍅'};
 let _toolboxMode='all';
 function readToolList(key){
   try{
@@ -1847,6 +1874,9 @@ const TAB_DEFS=[
   {id:'discchain',label:'DISC CHAIN'},
   {id:'numtrivia',label:'NUM PROPS'},
   {id:'macro',label:'MACROS'},
+  {id:'formula',label:'FORMULAS'},
+  {id:'budget',label:'BUDGET'},
+  {id:'pomo',label:'POMODORO'}
 ];
 (function buildNav(){
   const nav=document.getElementById('navTabs');
@@ -3677,7 +3707,9 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closePrivMod
 
 // This page does not monkey-patch the browser clipboard, network stack, or device APIs.
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
-function copyTxt(t){if(!t)return;navigator.clipboard.writeText(t).then(()=>toast('Copied!'));}
+function copyTxt(t){if(t===undefined||t===null||String(t)==='')return;if(!navigator.clipboard||!navigator.clipboard.writeText){toast('Clipboard unavailable in this browser');return;}navigator.clipboard.writeText(String(t)).then(()=>toast('Copied!')).catch(()=>toast('Copy blocked by browser'));}
+function copyHistory(){if(!hist.length){toast('No history to copy');return;}copyTxt(hist.map(h=>h.e+' '+h.r).join('\n'));}
+function downloadHistoryCsv(){if(!hist.length){toast('No history to export');return;}const quote=v=>'"'+String(v).replace(/"/g,'""')+'"';const csv='Expression,Result\r\n'+hist.map(h=>quote(h.e)+','+quote(h.r)).join('\r\n');const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8;'}));const a=document.createElement('a');a.href=url;a.download='hari-calcx-history.csv';a.style.display='none';document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),1000);toast('History CSV exported');}
 
 </script>
 

@@ -3688,6 +3688,122 @@ try{if(typeof cBday==="function")cBday();}catch(e){}
 try{if(typeof cCrypto==="function")cCrypto();}catch(e){}
 try{if(typeof cLoan2==="function")cLoan2();}catch(e){}
 
+
+/* ── Formula & Reference Library ───────────────────────────────────── */
+const FORMULA_DATA = [
+ {cat:'Algebra',title:'Quadratic equation',eq:'x = (−b ± √(b² − 4ac)) / (2a)',desc:'For ax² + bx + c = 0, where a ≠ 0.'},
+ {cat:'Algebra',title:'Pythagorean theorem',eq:'a² + b² = c²',desc:'For a right triangle; c is the hypotenuse.'},
+ {cat:'Algebra',title:'Slope between two points',eq:'m = (y₂ − y₁) / (x₂ − x₁)',desc:'Slope through (x₁,y₁) and (x₂,y₂), where x₂ ≠ x₁.'},
+ {cat:'Algebra',title:'Distance between two points',eq:'d = √((x₂ − x₁)² + (y₂ − y₁)²)',desc:'Straight-line distance between two points on a Cartesian plane.'},
+ {cat:'Algebra',title:'Difference of squares',eq:'a² − b² = (a − b)(a + b)',desc:'Factorises the difference between two perfect squares.'},
+ {cat:'Geometry',title:'Circle area',eq:'A = πr²',desc:'r is the radius. Diameter d = 2r.'},
+ {cat:'Geometry',title:'Circle circumference',eq:'C = 2πr = πd',desc:'Distance around a circle.'},
+ {cat:'Geometry',title:'Rectangle area',eq:'A = l × w',desc:'Length multiplied by width.'},
+ {cat:'Geometry',title:'Triangle area',eq:'A = ½ × b × h',desc:'Base multiplied by perpendicular height, divided by two.'},
+ {cat:'Geometry',title:'Trapezoid area',eq:'A = ½(a + b)h',desc:'a and b are parallel sides; h is their perpendicular separation.'},
+ {cat:'Geometry',title:'Cylinder volume',eq:'V = πr²h',desc:'r is base radius and h is cylinder height.'},
+ {cat:'Geometry',title:'Sphere volume',eq:'V = ⁴⁄₃πr³',desc:'Volume of a sphere of radius r.'},
+ {cat:'Geometry',title:'Sphere surface area',eq:'A = 4πr²',desc:'Total outer surface area of a sphere.'},
+ {cat:'Finance',title:'Simple interest',eq:'I = P × R × T / 100',desc:'P = principal, R = annual rate percent, T = years.'},
+ {cat:'Finance',title:'Compound amount',eq:'A = P(1 + r/n)ⁿᵗ',desc:'P = principal, r = annual decimal rate, n = compounding periods/year, t = years.'},
+ {cat:'Finance',title:'EMI / loan payment',eq:'EMI = P × r(1+r)ⁿ / ((1+r)ⁿ − 1)',desc:'P = principal, r = monthly decimal rate, n = monthly payments. For zero interest, EMI = P/n.'},
+ {cat:'Finance',title:'Profit percentage',eq:'Profit % = (Selling − Cost) / Cost × 100',desc:'Use cost price as the base. Negative means loss.'},
+ {cat:'Finance',title:'Discounted price',eq:'Final = Original × (1 − d/100)',desc:'d is the discount percentage; apply successive discounts sequentially.'},
+ {cat:'Physics',title:'Speed',eq:'v = d / t',desc:'Average speed equals distance divided by elapsed time.'},
+ {cat:'Physics',title:'Acceleration',eq:'a = (v − u) / t',desc:'Change in velocity over time; u is initial, v is final velocity.'},
+ {cat:'Physics',title:'Newton’s second law',eq:'F = m × a',desc:'Net force equals mass multiplied by acceleration.'},
+ {cat:'Physics',title:'Work',eq:'W = F × d × cos(θ)',desc:'Work by a constant force; θ is the angle between force and displacement.'},
+ {cat:'Physics',title:'Kinetic energy',eq:'KE = ½mv²',desc:'m is mass and v is speed; SI unit is joule.'},
+ {cat:'Physics',title:'Density',eq:'ρ = m / V',desc:'Mass divided by volume.'},
+ {cat:'Physics',title:'Ohm’s law',eq:'V = I × R',desc:'Voltage V, current I in amperes, resistance R in ohms.'},
+ {cat:'Physics',title:'Electrical power',eq:'P = V × I = I²R = V²/R',desc:'Use the version best suited to the values known.'},
+ {cat:'Physics',title:'Wave speed',eq:'v = f × λ',desc:'Frequency multiplied by wavelength.'},
+ {cat:'Physics',title:'Pressure',eq:'p = F / A',desc:'Perpendicular force divided by area.'},
+ {cat:'Statistics',title:'Arithmetic mean',eq:'Mean = Σx / n',desc:'Add the values and divide by the number of values.'},
+ {cat:'Statistics',title:'Population variance',eq:'σ² = Σ(x − μ)² / N',desc:'Average squared distance from the population mean.'},
+ {cat:'Statistics',title:'Sample standard deviation',eq:'s = √(Σ(x − x̄)² / (n − 1))',desc:'Common estimator of spread for a sample.'},
+ {cat:'Statistics',title:'Percentage change',eq:'Change % = (New − Old) / |Old| × 100',desc:'Positive means increase; negative means decrease. Undefined when Old = 0.'},
+ {cat:'Conversions',title:'Celsius to Fahrenheit',eq:'°F = (°C × 9/5) + 32',desc:'Temperature conversion.'},
+ {cat:'Conversions',title:'Fahrenheit to Celsius',eq:'°C = (°F − 32) × 5/9',desc:'Temperature conversion.'},
+ {cat:'Conversions',title:'km/h to m/s',eq:'m/s = km/h ÷ 3.6',desc:'For example, 36 km/h equals 10 m/s.'},
+ {cat:'Conversions',title:'Degrees and radians',eq:'Radians = Degrees × π/180',desc:'Convert angles for trigonometry.'},
+ {cat:'Constants',title:'Pi',eq:'π ≈ 3.141592653589793',desc:'Ratio of a circle’s circumference to its diameter.'},
+ {cat:'Constants',title:'Speed of light in vacuum',eq:'c = 299,792,458 m/s',desc:'Exact SI-defined speed of light in vacuum.'},
+ {cat:'Constants',title:'Gravitational acceleration near Earth',eq:'g ≈ 9.81 m/s²',desc:'Common approximation; local values vary slightly.'}
+];
+let _formulaCategory='All';
+function initFormulaLibrary(){
+ const host=document.getElementById('formulaFilters');if(!host)return;
+ ['All',...new Set(FORMULA_DATA.map(f=>f.cat))].forEach(cat=>{
+  const b=document.createElement('button');b.type='button';b.className='qb'+(cat===_formulaCategory?' active':'');b.textContent=cat;
+  b.addEventListener('click',()=>{_formulaCategory=cat;host.querySelectorAll('button').forEach(x=>x.classList.toggle('active',x.textContent===cat));renderFormulaLibrary();});host.appendChild(b);
+ });renderFormulaLibrary();
+}
+function renderFormulaLibrary(){
+ const grid=document.getElementById('formulaGrid'),empty=document.getElementById('formulaEmpty');if(!grid||!empty)return;
+ const q=(document.getElementById('formulaSearch')?.value||'').trim().toLowerCase();
+ const data=FORMULA_DATA.filter(f=>(_formulaCategory==='All'||f.cat===_formulaCategory)&&(!q||[f.cat,f.title,f.eq,f.desc].some(v=>v.toLowerCase().includes(q))));
+ grid.replaceChildren();
+ data.forEach(f=>{
+  const card=document.createElement('article');card.className='formula-card';
+  const cat=document.createElement('div');cat.style.cssText='font-size:9px;color:var(--a4);font-weight:800;letter-spacing:.08em;margin-bottom:5px';cat.textContent=f.cat.toUpperCase();
+  const title=document.createElement('div');title.className='formula-title';title.textContent=f.title;
+  const eq=document.createElement('div');eq.className='formula-equation';eq.textContent=f.eq;
+  const desc=document.createElement('div');desc.className='formula-desc';desc.textContent=f.desc;
+  const actions=document.createElement('div');actions.className='formula-actions';
+  const copy=document.createElement('button');copy.type='button';copy.className='qb';copy.textContent='COPY FORMULA';copy.addEventListener('click',()=>copyTxt(f.title+' — '+f.eq));
+  const notes=document.createElement('button');notes.type='button';notes.className='qb';notes.textContent='COPY NOTES';notes.addEventListener('click',()=>copyTxt(f.title+'\n'+f.eq+'\n'+f.desc));
+  actions.append(copy,notes);card.append(cat,title,eq,desc,actions);grid.appendChild(card);
+ });empty.style.display=data.length?'none':'block';
+}
+initFormulaLibrary();
+
+/* ── Monthly budget planner; entries are not persisted ─────────────── */
+let _budgetRowId=0;
+function addBudgetRow(name='',amount='0'){
+ const host=document.getElementById('budgetRows');if(!host||host.children.length>=30){toast('Maximum 30 expense categories');return;}
+ const row=document.createElement('div');row.className='budget-row';row.dataset.rowId=String(++_budgetRowId);
+ const nm=document.createElement('input');nm.className='inp bud-name';nm.type='text';nm.maxLength=40;nm.value=name;nm.placeholder='Expense name';nm.setAttribute('aria-label','Expense category');nm.autocomplete='off';nm.addEventListener('input',calculateBudget);
+ const am=document.createElement('input');am.className='inp bud-amount';am.type='number';am.min='0';am.step='0.01';am.value=String(amount);am.placeholder='0.00';am.setAttribute('aria-label','Expense amount');am.addEventListener('input',calculateBudget);
+ const rm=document.createElement('button');rm.type='button';rm.className='budget-remove';rm.textContent='×';rm.title='Remove expense';rm.setAttribute('aria-label','Remove expense');rm.addEventListener('click',()=>{row.remove();calculateBudget();});
+ row.append(nm,am,rm);host.appendChild(row);calculateBudget();
+}
+function moneyFmt(n){return n.toLocaleString('en-IN',{style:'currency',currency:'INR',maximumFractionDigits:2});}
+function calculateBudget(){
+ const host=document.getElementById('budgetRows');if(!host)return;
+ const income=Math.max(0,Number(document.getElementById('budgetIncome')?.value)||0),target=Math.min(100,Math.max(0,Number(document.getElementById('budgetTarget')?.value)||0));
+ const rows=Array.from(host.querySelectorAll('.budget-row')).map(row=>({name:(row.querySelector('.bud-name')?.value||'').trim()||'Unnamed expense',amount:Math.max(0,Number(row.querySelector('.bud-amount')?.value)||0)}));
+ const expenses=rows.reduce((s,r)=>s+r.amount,0),left=income-expenses,used=income>0?expenses/income*100:0,targetAmt=income*target/100;
+ document.getElementById('budgetExpenseTotal').textContent=moneyFmt(expenses);
+ const leftEl=document.getElementById('budgetLeft');leftEl.textContent=moneyFmt(left);leftEl.style.color=left<0?'var(--a3)':'var(--a2)';
+ document.getElementById('budgetLeftNote').textContent=(income>0?(left/income*100).toFixed(1):'0.0')+'% of income remains';
+ document.getElementById('budgetTargetAmount').textContent=moneyFmt(targetAmt);
+ document.getElementById('budgetTargetStatus').textContent=income<=0?'Enter monthly income':left<0?'Over budget':(left>=targetAmt?'Target reached':'Below target by '+moneyFmt(targetAmt-left));
+ document.getElementById('budgetUsed').textContent=(Math.round(used*10)/10)+'%';
+ document.getElementById('budgetUsedBar').style.width=Math.min(100,Math.max(0,used))+'%';document.getElementById('budgetUsedBar').style.background=used>100?'var(--a3)':'var(--a2)';
+ const chart=document.getElementById('budgetBreakdown');chart.replaceChildren();const sorted=rows.filter(r=>r.amount>0).sort((a,b)=>b.amount-a.amount);
+ if(!sorted.length){const n=document.createElement('div');n.className='h-em';n.textContent='Add expense amounts to see your breakdown.';chart.appendChild(n);return;}
+ sorted.forEach(r=>{const wrap=document.createElement('div');wrap.className='budget-break-row';const label=document.createElement('span');label.style.cssText='min-width:70px;max-width:34%;overflow-wrap:anywhere';label.textContent=r.name;const bar=document.createElement('div');bar.className='budget-bar';const fill=document.createElement('span');fill.style.width=(expenses>0?r.amount/expenses*100:0)+'%';bar.appendChild(fill);const amount=document.createElement('span');amount.style.cssText='min-width:90px;text-align:right;font-family:var(--font-mono)';amount.textContent=moneyFmt(r.amount);const share=document.createElement('span');share.style.cssText='min-width:42px;text-align:right;color:var(--tm)';share.textContent=(expenses>0?r.amount/expenses*100:0).toFixed(0)+'%';wrap.append(label,bar,amount,share);chart.appendChild(wrap);});
+}
+function resetBudget(){if(!window.confirm('Reset income, target savings and all expense rows?'))return;document.getElementById('budgetIncome').value='30000';document.getElementById('budgetTarget').value='20';document.getElementById('budgetRows').replaceChildren();_budgetRowId=0;initBudgetPlanner();}
+function initBudgetPlanner(){const host=document.getElementById('budgetRows');if(!host)return;if(!host.children.length)[['Housing / rent','10000'],['Food & groceries','5000'],['Transport','2000'],['Bills & subscriptions','2000'],['Other','1000']].forEach(([n,a])=>addBudgetRow(n,a));calculateBudget();}
+initBudgetPlanner();
+
+/* ── Pomodoro focus timer ─────────────────────────────────────────── */
+let pomoMode='focus',pomoRemaining=1500,pomoTotal=1500,pomoRunning=false,pomoEndsAt=0,pomoInterval=null,pomoCompleted=0;
+function pomoDuration(mode){const ids={focus:'pomoFocusLength',short:'pomoShortLength',long:'pomoLongLength'},limits={focus:[1,180],short:[1,60],long:[1,90]},el=document.getElementById(ids[mode]),[lo,hi]=limits[mode];return Math.min(hi,Math.max(lo,Math.floor(Number(el?.value)||({focus:25,short:5,long:15}[mode]))))*60;}
+function formatPomo(seconds){const s=Math.max(0,Math.ceil(seconds));return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function stopPomoInterval(){if(pomoInterval!==null){clearInterval(pomoInterval);pomoInterval=null;}}
+function renderPomo(){const clock=document.getElementById('pomoClock');if(!clock)return;clock.textContent=formatPomo(pomoRemaining);document.getElementById('pomoProgress').style.width=(pomoTotal>0?Math.max(0,Math.min(100,pomoRemaining/pomoTotal*100)):0)+'%';document.getElementById('pomoStatus').textContent=pomoRunning?'IN PROGRESS · '+pomoMode.toUpperCase():pomoRemaining<pomoTotal?'PAUSED · '+pomoMode.toUpperCase():'READY · '+pomoMode.toUpperCase();document.getElementById('pomoStart').textContent=pomoRunning?'Ⅱ PAUSE':'▶ START';document.getElementById('pomoRound').textContent='Sessions completed: '+pomoCompleted+' · Goal: '+Math.max(1,Math.min(20,Number(document.getElementById('pomoGoal')?.value)||4));const ids={focus:'pomoFocusMode',short:'pomoShortMode',long:'pomoLongMode'};Object.entries(ids).forEach(([mode,id])=>document.getElementById(id).classList.toggle('active',mode===pomoMode));}
+function setPomoMode(mode){if(!['focus','short','long'].includes(mode))return;stopPomoInterval();pomoRunning=false;pomoMode=mode;pomoTotal=pomoDuration(mode);pomoRemaining=pomoTotal;renderPomo();}
+function updatePomoDurations(){if(pomoRunning)return;pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;renderPomo();}
+function tickPomo(){if(!pomoRunning)return;pomoRemaining=Math.max(0,Math.ceil((pomoEndsAt-Date.now())/1000));if(pomoRemaining<=0){pomoFinish();return;}renderPomo();}
+function togglePomo(){if(pomoRunning){pomoRemaining=Math.max(0,Math.ceil((pomoEndsAt-Date.now())/1000));pomoRunning=false;stopPomoInterval();renderPomo();return;}if(pomoRemaining<=0){pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;}pomoRunning=true;pomoEndsAt=Date.now()+pomoRemaining*1000;stopPomoInterval();pomoInterval=setInterval(tickPomo,250);renderPomo();}
+function pomoFinish(){const was=pomoMode;pomoRunning=false;pomoRemaining=0;stopPomoInterval();if(was==='focus'){pomoCompleted++;const goal=Math.max(1,Math.min(20,Number(document.getElementById('pomoGoal')?.value)||4));toast(pomoCompleted>=goal?'Focus goal reached! Take a break.':'Focus session complete. Take a break!');setPomoMode(pomoCompleted%4===0?'long':'short');}else{toast('Break complete. Ready for another focus session?');setPomoMode('focus');}}
+function resetPomo(){stopPomoInterval();pomoRunning=false;pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;renderPomo();}
+function skipPomo(){if(pomoMode==='focus')pomoMode=(pomoCompleted+1)%4===0?'long':'short';else pomoMode='focus';pomoTotal=pomoDuration(pomoMode);pomoRemaining=pomoTotal;pomoRunning=false;stopPomoInterval();renderPomo();}
+renderPomo();
+
 function showPrivacyInfo(){
   const modal=document.getElementById('privModal');
   if(modal)modal.classList.add('show');

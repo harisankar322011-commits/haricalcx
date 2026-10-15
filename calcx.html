@@ -30,7 +30,7 @@
 <meta http-equiv="Pragma" content="no-cache">
 <title>HARI CALCX</title>
 <!-- No third-party scripts or CDNs are loaded. The currency converter makes a direct request for exchange rates when online. -->
-<!-- PRIVACY: All computation is local — no data ever leaves this page -->
+<!-- Calculator operations run locally. Currency conversion optionally requests live exchange rates. -->
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 /* PRIVACY: System font stack — no external requests, works offline, faster load */
@@ -371,244 +371,12 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
 @media(max-width:480px){.rg3{grid-template-columns:1fr 1fr;}.rg4{grid-template-columns:1fr 1fr;}}
 
 
-/* ══════════════════════════════════════════
-   AI ASSISTANT — HARI CALCULX AI
-   ══════════════════════════════════════════ */
-
-
-@keyframes ai-pulse{
-  0%,100%{box-shadow:0 0 0 0 rgba(168,85,247,.5);}
-  50%{box-shadow:0 0 0 10px rgba(168,85,247,0);}
-}
-}
-
-
-
-
-
-
-
-
-
-.ai-status.thinking{color:#0ff;animation:blink .8s infinite;}
-
-.ai-close:hover{color:var(--tx);}
-
-
-.ai-messages::-webkit-scrollbar{width:4px;}
-.ai-messages::-webkit-scrollbar-track{background:transparent;}
-.ai-messages::-webkit-scrollbar-thumb{background:rgba(168,85,247,.3);border-radius:4px;}
-
-
-@keyframes msg-in{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:none;}}
-
-
-.ai-msg.bot 
-.ai-msg.user 
-
-.ai-msg.bot 
-.ai-msg.user 
-
-
-
-
-.ai-thinking{display:flex;gap:5px;padding:10px 14px;align-items:center;}
-.ai-thinking span{width:7px;height:7px;border-radius:50%;background:#a855f7;animation:think .9s infinite;}
-.ai-thinking span:nth-child(2){animation-delay:.2s;}
-.ai-thinking span:nth-child(3){animation-delay:.4s;}
-@keyframes think{0%,100%{opacity:.2;transform:scale(.8);}50%{opacity:1;transform:scale(1.1);}}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Landscape compact */
-@media screen and (orientation:landscape) and (max-height:500px){
-  
-  
-}
-
-/* ══ PRIVACY MODAL ══ */
-.priv-modal{position:fixed;inset:0;background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;z-index:10000;opacity:0;pointer-events:none;transition:opacity .25s;}
-.priv-modal.show{opacity:1;pointer-events:all;}
-.priv-inner{background:var(--s1);border:1px solid var(--a2);border-radius:16px;padding:20px;max-width:380px;width:calc(100vw - 32px);max-height:85vh;overflow-y:auto;}
-.priv-title{font-size:13px;font-weight:800;color:var(--a2);letter-spacing:.08em;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
-.priv-row{display:flex;align-items:flex-start;gap:10px;padding:7px 0;border-bottom:1px solid var(--bd);}
-.priv-row:last-child{border-bottom:none;}
-.priv-icon{font-size:14px;min-width:20px;}
-.priv-text{font-size:11px;color:var(--tm);line-height:1.5;}
-.priv-text strong{color:var(--tx);font-weight:700;}
-/* ══ PORTRAIT MODE ══ */
-@media screen and (orientation:portrait) and (max-width:600px){
-  .rg2,.rg3,.rg4{grid-template-columns:1fr 1fr;}
-  .seg-b{min-width:56px;padding:5px 8px;font-size:10px;}
-  .rv{font-size:clamp(14px,5vw,22px);}
-  .inp{font-size:14px;padding:7px 9px;}
-  button.k.num,button.k.op,button.k.cl,button.k.dl,button.k.eq{height:44px;font-size:15px;}
-  .toolbox-overlay .toolbox-inner{width:calc(100vw - 16px);max-height:80vh;}
-}
-/* ══ LANDSCAPE MODE ══ */
-@media screen and (orientation:landscape) and (max-height:500px){
-  .topbar{padding:4px 12px;}
-  .logo{font-size:13px;}
-  .tb{padding:4px 8px;font-size:9px;}
-  .card.panel{padding:10px;}
-  .rg2{grid-template-columns:1fr 1fr 1fr 1fr;}
-  .rg3{grid-template-columns:repeat(3,1fr);}
-  .rv{font-size:14px;}
-  .ri{padding:6px 5px;}
-  .inp{padding:6px 8px;font-size:13px;}
-  button.k.num,button.k.op,button.k.cl,button.k.dl,button.k.eq{height:38px;font-size:14px;}
-  button.k.sci{height:26px;font-size:8.5px;}
-  .sw-t{font-size:32px;}
-  .cd-d{font-size:28px;}
-}
-/* ══ TABLET PORTRAIT ══ */
-@media screen and (min-width:601px) and (max-width:900px) and (orientation:portrait){
-  .rg2,.rg3,.rg4{grid-template-columns:repeat(3,1fr);}
-}
-/* ══ ORIENTATION PILL ══ */
-#orient-pill{position:fixed;bottom:18px;right:14px;background:var(--s3);border:1px solid var(--bd2);border-radius:20px;padding:5px 11px;font-size:10px;color:var(--tm);letter-spacing:.06em;opacity:0;transition:opacity .4s;pointer-events:none;z-index:9999;}
-#orient-pill.show{opacity:1;}
-/* ══ NEW TOOL CSS ══ */
-.quiz-opt{padding:9px 12px;background:var(--s2);border:1px solid var(--bd);border-radius:9px;font-size:12px;cursor:pointer;margin-bottom:6px;transition:all .2s;color:var(--tx);width:100%;text-align:left;}
-.quiz-opt:hover{border-color:var(--a2);color:var(--a2);}
-.quiz-opt.correct{background:rgba(74,245,74,.12);border-color:#4f4;color:#4f4;}
-.quiz-opt.wrong{background:rgba(245,74,74,.12);border-color:#f44;color:#f44;}
-.age-breakdown{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-top:8px;}
-.age-cell{background:var(--s2);border:1px solid var(--bd);border-radius:9px;padding:8px;text-align:center;}
-.age-cell-v{font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--a2);}
-.age-cell-l{font-size:9px;color:var(--tm);margin-top:2px;letter-spacing:.05em;}
-.vpc-row{display:flex;gap:8px;align-items:center;margin-bottom:6px;}
-.vpc-label{font-size:11px;color:var(--tm);min-width:70px;}
-.vpc-bar{flex:1;height:8px;background:var(--s3);border-radius:4px;overflow:hidden;}
-.vpc-fill{height:100%;border-radius:4px;transition:width .5s;}
-.vpc-val{font-family:var(--font-mono);font-size:11px;color:var(--a1);min-width:40px;text-align:right;}
-.dp-preview{width:100%;height:36px;border-radius:9px;margin-top:8px;border:1px solid var(--bd);}
-.shortcut-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;}
-.sc-item{background:var(--s2);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;}
-.sc-key{font-family:var(--font-mono);font-size:10px;color:var(--a1);background:var(--s3);padding:2px 6px;border-radius:4px;border:1px solid var(--bd2);}
-.sc-desc{font-size:10px;color:var(--tm);}
-.rm-row{display:flex;gap:6px;margin-bottom:6px;align-items:center;}
-.rm-label{font-size:11px;color:var(--tm);min-width:90px;}
-.rm-bar{flex:1;height:6px;background:var(--s3);border-radius:4px;overflow:hidden;}
-.rm-fill{height:100%;border-radius:4px;background:var(--a2);transition:width .5s;}
-.rm-val{font-family:var(--font-mono);font-size:10px;color:var(--a1);min-width:42px;text-align:right;}
-.tip-btn-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin:8px 0;}
-.tipq{padding:7px 4px;background:var(--s2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;color:var(--tm);cursor:pointer;text-align:center;transition:all .2s;}
-.tipq:hover,.tipq.active{background:var(--a2);color:#000;border-color:var(--a2);}
-
 @media(max-width:480px){
   .tb{padding:5px 8px;font-size:9.5px;}
   button.k.num,button.k.op,button.k.cl,button.k.dl,button.k.eq{height:46px;}
   button.k.sci{height:31px;font-size:9px;}
   .sw-t{font-size:36px;}
   .cd-d{font-size:32px;}
-}
-
-/* ── AI ASSISTANT PANEL ───────────────────────────────── */
-.ai-fab{
-  position:fixed;bottom:20px;right:20px;
-  width:54px;height:54px;border-radius:50%;
-  background:linear-gradient(135deg,#a855f7,#06b6d4);
-  border:none;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:22px;z-index:8000;
-  box-shadow:0 4px 20px rgba(168,85,247,.5);
-  transition:transform .2s,box-shadow .2s;
-}
-.ai-fab:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(168,85,247,.7);}
-.ai-fab .ai-dot{
-  position:absolute;top:4px;right:4px;
-  width:10px;height:10px;border-radius:50%;
-  background:#4af5c8;border:2px solid var(--bg);
-}
-.ai-panel{
-  position:fixed;bottom:84px;right:20px;
-  width:min(380px,calc(100vw - 32px));
-  background:var(--s1);
-  border:1px solid rgba(168,85,247,.35);
-  border-radius:20px;z-index:8000;
-  box-shadow:0 8px 40px rgba(0,0,0,.6);
-  transform:translateY(16px) scale(.97);
-  opacity:0;pointer-events:none;
-  transition:transform .22s cubic-bezier(.34,1.56,.64,1),opacity .18s;
-  overflow:hidden;
-}
-.ai-panel.open{transform:translateY(0) scale(1);opacity:1;pointer-events:all;}
-.ai-panel-header{
-  padding:14px 16px 12px;
-  background:linear-gradient(135deg,rgba(168,85,247,.15),rgba(6,182,212,.1));
-  border-bottom:1px solid rgba(168,85,247,.2);
-  display:flex;align-items:center;justify-content:space-between;
-}
-.ai-panel-title{
-  font-size:13px;font-weight:800;
-  letter-spacing:.06em;color:var(--tm);
-  text-transform:uppercase;
-}
-.ai-panel-sub{font-size:10px;color:var(--tm);opacity:.6;margin-top:2px;}
-.ai-close-btn{
-  background:none;border:none;cursor:pointer;
-  color:var(--tm);font-size:16px;opacity:.6;
-  padding:4px;border-radius:6px;transition:opacity .15s;
-}
-.ai-close-btn:hover{opacity:1;}
-.ai-grid{
-  padding:14px 14px 8px;
-  display:grid;grid-template-columns:1fr 1fr;gap:10px;
-}
-.ai-card{
-  display:flex;flex-direction:column;align-items:center;
-  gap:6px;padding:14px 10px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.06);
-  background:var(--s2);
-  cursor:pointer;text-decoration:none;
-  transition:transform .18s,border-color .18s,box-shadow .18s;
-  position:relative;overflow:hidden;
-}
-.ai-card::before{
-  content:'';position:absolute;inset:0;
-  opacity:0;transition:opacity .18s;
-}
-.ai-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,0,0,.3);}
-.ai-card:hover::before{opacity:1;}
-.ai-card-icon{font-size:28px;line-height:1;}
-.ai-card-name{
-  font-size:11px;font-weight:700;
-  letter-spacing:.04em;color:var(--tx);
-  text-align:center;
-}
-.ai-card-desc{
-  font-size:9px;color:var(--tm);opacity:.7;
-  text-align:center;line-height:1.3;
-}
-/* Individual brand colours */
-.ai-card.claude  {border-color:rgba(205,149,75,.3);}
-.ai-card.claude:hover{border-color:rgba(205,149,75,.7);box-shadow:0 6px 20px rgba(205,149,75,.2);}
-.ai-card.chatgpt {border-color:rgba(16,163,127,.3);}
-.ai-card.chatgpt:hover{border-color:rgba(16,163,127,.7);box-shadow:0 6px 20px rgba(16,163,127,.2);}
-.ai-card.gemini  {border-color:rgba(66,133,244,.3);}
-.ai-card.gemini:hover{border-color:rgba(66,133,244,.7);box-shadow:0 6px 20px rgba(66,133,244,.2);}
-.ai-card.meta    {border-color:rgba(24,119,242,.3);}
-.ai-card.meta:hover{border-color:rgba(24,119,242,.7);box-shadow:0 6px 20px rgba(24,119,242,.2);}
-.ai-card.grok    {border-color:rgba(255,255,255,.2);}
-.ai-card.grok:hover{border-color:rgba(255,255,255,.5);box-shadow:0 6px 20px rgba(255,255,255,.1);}
-.ai-card.copilot {border-color:rgba(0,120,212,.3);}
-.ai-card.copilot:hover{border-color:rgba(0,120,212,.7);box-shadow:0 6px 20px rgba(0,120,212,.2);}
-.ai-footer{
-  padding:10px 14px 14px;
-  text-align:center;font-size:9px;
-  color:var(--tm);opacity:.45;
-  border-top:1px solid rgba(255,255,255,.05);
 }
 
 </style>
@@ -1633,7 +1401,7 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
 <div id="orient-pill"></div>
 
 <!-- ══════════════════════════════════════
-     HARI CALCX ASSISTANT
+     HARI CALCX PRIVACY CONTROLS
      ══════════════════════════════════════ -->
 
 
@@ -1647,7 +1415,7 @@ button.k.dis{opacity:.2;cursor:not-allowed;pointer-events:none;}
     </div>
     <div class="priv-row"><span class="priv-icon">🧮</span><div class="priv-text"><strong>Local calculations</strong><br>Calculator tools run in this page. Calculation inputs and results are not sent to a server by the calculator.</div></div>
     <div class="priv-row"><span class="priv-icon">🌐</span><div class="priv-text"><strong>Network use</strong><br>The currency converter can request exchange rates from open.er-api.com. Other calculator tools work without that request.</div></div>
-    <div class="priv-row"><span class="priv-icon">🤖</span><div class="priv-text"><strong>AI links are external</strong><br>AI buttons open third-party websites only when you tap them. This app does not send your calculator data to those AI providers. Anything you type on their sites is governed by their own policies.</div></div>
+    <div class="priv-row"><span class="priv-icon">🚫</span><div class="priv-text"><strong>No AI links or embedded AI services</strong><br>Hari CalcX focuses on calculator and productivity tools. It does not open or embed third-party AI assistants.</div></div>
     <div class="priv-row"><span class="priv-icon">🔑</span><div class="priv-text"><strong>Password generator</strong><br>Passwords are generated in your browser using the Web Crypto API. Do not reuse passwords, and store important passwords in a trusted password manager.</div></div>
     <div class="priv-row"><span class="priv-icon">🗂️</span><div class="priv-text"><strong>Tab-only preferences</strong><br>Theme, currency-rate cache, favourites, and recent tools use session storage. They are intended to last only for the current tab session.</div></div>
     <div class="priv-row"><span class="priv-icon">🛡️</span><div class="priv-text"><strong>HTTP security headers</strong><br>Netlify serves clickjacking, MIME-sniffing, referrer, permissions, and Content Security Policy headers. Inline JavaScript is still allowed for this single-file app, so these are protective layers—not a guarantee against every script-injection bug.</div></div>
@@ -3911,182 +3679,8 @@ document.addEventListener('keydown',function(e){if(e.key==='Escape')closePrivMod
 function toast(msg){const el=document.getElementById('toast');el.textContent=msg;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),2200);}
 function copyTxt(t){if(!t)return;navigator.clipboard.writeText(t).then(()=>toast('Copied!'));}
 
-// ── AI ASSISTANT TOGGLE ──────────────────────────────────
-var _aiOpen = false;
-function toggleAIPanel(){
-  _aiOpen = !_aiOpen;
-  var panel = document.getElementById('aiPanel');
-  if(panel) panel.classList.toggle('open', _aiOpen);
-}
-// Close on outside click
-document.addEventListener('click', function(e){
-  if(!_aiOpen) return;
-  var panel = document.getElementById('aiPanel');
-  var fab   = document.getElementById('aiFab');
-  if(panel && !panel.contains(e.target) && fab && !fab.contains(e.target)){
-    _aiOpen = false;
-    panel.classList.remove('open');
-  }
-});
-// Close on Escape
-document.addEventListener('keydown', function(e){
-  if(e.key === 'Escape' && _aiOpen){ _aiOpen=false; var p=document.getElementById('aiPanel'); if(p) p.classList.remove('open'); }
-});
-
 </script>
 
-<script>
-
-// Global backup for aiAsk — in case AI IIFE hasn't run yet when button clicked
-if(typeof window.aiAsk !== 'function'){
-  window.aiAsk = function(txt){
-    var inp = document.getElementById('aiInput');
-    if(inp){ inp.value = txt; if(typeof window.aiSend==='function') window.aiSend(); }
-  };
-}
-
-</script>
-
-<!-- ── AI ASSISTANT ─────────────────────────────────── -->
-<button class="ai-fab" id="aiFab" onclick="toggleAIPanel()" title="Ask AI (6 options)">
-  🤖<span class="ai-dot"></span>
-</button>
-
-<div class="ai-panel" id="aiPanel">
-  <div class="ai-panel-header">
-    <div>
-      <div class="ai-panel-title">🤖 Ask AI</div>
-      <div class="ai-panel-sub">Choose your AI assistant</div>
-    </div>
-    <button class="ai-close-btn" onclick="toggleAIPanel()">✕</button>
-  </div>
-  <div class="ai-grid">
-    <a class="ai-card claude"  href="https://claude.ai"                target="_blank" rel="noopener">
-      <span class="ai-card-icon">🟠</span>
-      <span class="ai-card-name">Claude</span>
-      <span class="ai-card-desc">Anthropic · Thoughtful</span>
-    </a>
-    <a class="ai-card chatgpt" href="https://chat.openai.com"           target="_blank" rel="noopener">
-      <span class="ai-card-icon">🟢</span>
-      <span class="ai-card-name">ChatGPT</span>
-      <span class="ai-card-desc">OpenAI · Versatile</span>
-    </a>
-    <a class="ai-card gemini"  href="https://gemini.google.com"         target="_blank" rel="noopener">
-      <span class="ai-card-icon">🔵</span>
-      <span class="ai-card-name">Gemini</span>
-      <span class="ai-card-desc">Google · Multimodal</span>
-    </a>
-    <a class="ai-card meta"    href="https://www.meta.ai"               target="_blank" rel="noopener">
-      <span class="ai-card-icon">🔷</span>
-      <span class="ai-card-name">Meta AI</span>
-      <span class="ai-card-desc">Meta · Llama powered</span>
-    </a>
-    <a class="ai-card grok"    href="https://grok.com"                  target="_blank" rel="noopener">
-      <span class="ai-card-icon">⚡</span>
-      <span class="ai-card-name">Grok</span>
-      <span class="ai-card-desc">xAI · Real-time web</span>
-    </a>
-    <a class="ai-card copilot" href="https://copilot.microsoft.com"     target="_blank" rel="noopener">
-      <span class="ai-card-icon">🪟</span>
-      <span class="ai-card-name">Copilot</span>
-      <span class="ai-card-desc">Microsoft · Integrated</span>
-    </a>
-  </div>
-  <div class="ai-footer">Opens in new tab · No data sent from this app</div>
-</div>
-
-
-
-
-
-<!-- ── AI HELP BUTTON ───────────────────────────────── -->
-<style>
-#aiHelpBtn{
-  position:fixed;bottom:20px;right:20px;z-index:8000;
-  width:56px;height:56px;border-radius:50%;
-  background:linear-gradient(135deg,#a855f7,#06b6d4);
-  border:none;cursor:pointer;font-size:24px;
-  box-shadow:0 4px 20px rgba(168,85,247,.6);
-  transition:transform .2s,box-shadow .2s;
-  display:flex;align-items:center;justify-content:center;
-}
-#aiHelpBtn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(168,85,247,.8);}
-#aiHelpLabel{
-  position:fixed;bottom:82px;right:12px;z-index:8000;
-  background:rgba(26,26,46,.95);border:1px solid rgba(168,85,247,.4);
-  border-radius:10px;padding:7px 11px;font-size:10px;
-  color:#e2e8f0;max-width:180px;text-align:center;
-  line-height:1.4;pointer-events:none;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
-}
-#aiHelpOverlay{
-  display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);
-  z-index:8999;align-items:center;justify-content:center;
-}
-#aiHelpOverlay.show{display:flex;}
-#aiHelpBox{
-  background:#1a1a2e;border:1px solid rgba(168,85,247,.4);
-  border-radius:20px;padding:22px;width:min(400px,calc(100vw - 32px));
-  box-shadow:0 8px 40px rgba(0,0,0,.9);max-height:90vh;overflow-y:auto;
-}
-#aiHelpBox h3{color:#e2e8f0;font-size:15px;font-weight:800;margin:0 0 6px;text-align:center;}
-#aiHelpBox p{color:#94a3b8;font-size:11px;line-height:1.6;margin:0 0 16px;text-align:center;}
-.aiLink{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 14px;border-radius:12px;margin-bottom:8px;
-  text-decoration:none;border:1px solid rgba(255,255,255,.07);
-  background:rgba(255,255,255,.04);transition:all .18s;
-}
-.aiLink:hover{background:rgba(168,85,247,.12);border-color:rgba(168,85,247,.35);transform:translateX(3px);}
-.aiLink-icon{font-size:22px;flex-shrink:0;}
-.aiLink-name{display:block;font-size:12px;font-weight:700;color:#e2e8f0;}
-.aiLink-desc{display:block;font-size:10px;color:#64748b;margin-top:1px;}
-#aiHelpClose{
-  margin-top:10px;background:none;border:1px solid rgba(255,255,255,.1);
-  border-radius:10px;padding:9px 20px;color:#64748b;font-size:11px;
-  cursor:pointer;transition:all .2s;width:100%;
-}
-#aiHelpClose:hover{border-color:rgba(255,255,255,.3);color:#e2e8f0;}
-</style>
-
-<div id="aiHelpLabel">Have doubts in Maths?<br>These AIs will help! 👇</div>
-<button id="aiHelpBtn" onclick="document.getElementById('aiHelpOverlay').classList.add('show')" title="Ask AI for math help">🤖</button>
-
-<div id="aiHelpOverlay" onclick="if(event.target===this)this.classList.remove('show')">
-  <div id="aiHelpBox">
-    <h3>🤖 AI Math Assistants</h3>
-    <p>If you have any doubts regarding mathematics,<br>these AIs will help you learn it!</p>
-    <a class="aiLink" href="https://claude.ai" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🟠</span>
-      <div><span class="aiLink-name">Claude</span><span class="aiLink-desc">by Anthropic · Best for explanations</span></div>
-    </a>
-    <a class="aiLink" href="https://chat.openai.com" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🟢</span>
-      <div><span class="aiLink-name">ChatGPT</span><span class="aiLink-desc">by OpenAI · Step by step solutions</span></div>
-    </a>
-    <a class="aiLink" href="https://gemini.google.com" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🔵</span>
-      <div><span class="aiLink-name">Gemini</span><span class="aiLink-desc">by Google · Free &amp; fast</span></div>
-    </a>
-    <a class="aiLink" href="https://www.meta.ai" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🔷</span>
-      <div><span class="aiLink-name">Meta AI</span><span class="aiLink-desc">by Meta · Free, no sign-in needed</span></div>
-    </a>
-    <a class="aiLink" href="https://grok.com" target="_blank" rel="noopener">
-      <span class="aiLink-icon">⚡</span>
-      <div><span class="aiLink-name">Grok</span><span class="aiLink-desc">by xAI · Real-time web knowledge</span></div>
-    </a>
-    <a class="aiLink" href="https://copilot.microsoft.com" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🪟</span>
-      <div><span class="aiLink-name">Microsoft Copilot</span><span class="aiLink-desc">by Microsoft · Free with Bing</span></div>
-    </a>
-    <a class="aiLink" href="https://you.com" target="_blank" rel="noopener">
-      <span class="aiLink-icon">🔴</span>
-      <div><span class="aiLink-name">You.com</span><span class="aiLink-desc">Free AI + web search combined</span></div>
-    </a>
-    <button id="aiHelpClose" onclick="document.getElementById('aiHelpOverlay').classList.remove('show')">✕ Close</button>
-  </div>
-</div>
 
 
 </body>
